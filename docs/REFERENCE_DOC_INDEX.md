@@ -54,3 +54,43 @@ and calibration anchors into the yaml/json the system actually consumes.
 | §11 Calibration acceptance criteria                    | `docs/CALIBRATION_SPEC.md` (M11) + `config/calibration_config.json` (M11) + `calibration/tests/*.py` | Source of truth for the six tests.  Inequalities and tolerances copied verbatim — never loosened.                                                              |
 | §12 Document refresh log                               | (none)                                                                                               | Documentation only — used to date the next-pull window for `curation/` agent (Layer 5 refresh).                                                                |
 | §13 Citation discipline summary                        | `curation/sources_registry.yaml` (M6) — policy reference                                             | Documentation only here; the registry's `trust_tier` and `confidence` fields are seeded from this section's guidance.                                          |
+
+---
+
+## 2. Confidence-tier policy
+
+The reference doc tags every numeric value with a `type` and a
+`confidence` tier.  When an M5 / M6 author copies a value into a yaml
+file, those two fields collapse into the yaml's per-value
+`{provenance, confidence}` pair using the table below.  The mapping is
+load-bearing: the curation provenance audit (M8) walks every numeric
+value in `params/` and `baselines/data/` and fails if `provenance` is
+missing or unrecognised.
+
+| Reference doc tier                                                                  | yaml `provenance`                | yaml `confidence` | When to use                                                                                                                                                                              |
+|-------------------------------------------------------------------------------------|----------------------------------|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `confidence=high` AND `type=earnings`                                               | `"earnings"`                     | `"high"`          | Meta IR earnings calls, Meta press releases on quarterly results, Alphabet earnings calls.  Direct first-party financial disclosure.                                                     |
+| `confidence=high` AND `type=sec_filing`                                             | `"sec_filing"`                   | `"high"`          | Meta 8-K, 10-K, 10-Q; Alphabet 8-K / 10-K; Snap 8-K.  The most authoritative tier — auditor-attested financials.                                                                         |
+| `confidence=high` AND `type=public_statement`                                       | `"public_statement"`             | `"high"`          | Meta Newsroom posts, Mosseri verbatim statements with citation, Meta Transparency Center reports, Meta Family Center policy text, EU Commission press releases, Pew teen anchor numbers. |
+| `confidence=medium` AND `type=industry`                                             | `"industry"`                     | `"medium"`        | eMarketer, Sensor Tower, DataReportal, Tinuiti, Pew, Sprout Social, HypeAuditor, Backlinko reporting their own methodology.  Reputable analyst with a documented method.                 |
+| `confidence=low` OR `type ∈ {estimate, derived, synthesized}`                       | `"synthesized_2026-04-28"`       | `"low"`           | Anything below the analyst tier — secondary aggregators, anecdotal creator/practitioner data, derived ratios, simulator seed defaults.  Add a `note` field carrying the original cited source.  |
+| `flag:not_disclosed` AND the simulator architecturally requires a value             | `"synthesized_2026-04-28"`       | `"low"`           | Add `note: "Meta does not publicly disclose; modeled estimate"`.  See the paragraph below.                                                                                              |
+| `flag:not_disclosed` AND the value is purely informational (no algorithm reads it)  | (omit from yaml entirely)        | (omit)            | Document the absence in the reference doc, but do not invent a yaml value.  M6 may still record the absence as a note in the relevant baseline file.                                     |
+| `flag:stale` (value last refreshed >12 months ago)                                  | (preserve the original tier)     | (preserve)        | Keep the value, but add `note: "value last refreshed [date]; flagged for re-pull"`.  The `curation/` Layer 5 agent (M13) prioritises stale values on the next refresh.                  |
+
+### What to do when Meta has not disclosed a value the simulator needs
+
+Most calibration-anchor values that Meta hasn't published — Reels-specific
+prevalence, Reels-vs-Feed eCPM ratio, Reels Gini coefficient,
+crash-free session rate, p95 cold-start, the connected/unconnected
+ranking pool mix — are still architecturally required: an algorithm
+or a calibration test reads them.  In every such case the rule is the
+same.  Use `provenance: "synthesized_2026-04-28"` and `confidence: "low"`,
+attach a `note` field that names the closest available proxy and the
+reasoning ("Meta does not publicly disclose; modeled from <proxy>;
+calibration test_<n> tunes this"), and pick a defensible default within
+the industry-implied range from the reference doc.  Never invent a
+provenance string outside the registered set, and never raise confidence
+above "low" to make a missing value look better than it is — the
+audit will see through it and the calibration suite is the thing that
+actually validates the choice.
