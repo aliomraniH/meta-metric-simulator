@@ -1,0 +1,34 @@
+run = "python -m infra.server"
+modules = ["python-3.11"]
+
+hidden = [".pytest_cache", "__pycache__", ".mypy_cache", ".ruff_cache"]
+
+[deployment]
+run = ["sh", "-c", "python -m infra.server"]
+deploymentTarget = "vm"
+
+[env]
+# Claude Agent SDK — fork subagents into separate processes for ~90% input-token savings on fan-out
+CLAUDE_CODE_FORK_SUBAGENT = "1"
+# Enable OpenTelemetry export from the SDK
+CLAUDE_CODE_ENABLE_TELEMETRY = "1"
+# Default transport binding (Replit Reserved VM)
+MCP_HOST = "0.0.0.0"
+MCP_PORT = "8080"
+# Stateful streamable-http (sampling/elicitation/roots require this)
+MCP_STATEFUL = "1"
+# Python tweaks
+PYTHONUNBUFFERED = "1"
+PYTHONDONTWRITEBYTECODE = "1"
+
+[nix]
+channel = "stable-23_11"
+
+[languages.python]
+pattern = "**/*.py"
+
+[languages.python.languageServer]
+start = "pylsp"
+
+[unitTest]
+language = "python3"
