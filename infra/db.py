@@ -28,6 +28,7 @@ from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator
 
 from sqlalchemy import (
+    JSON,
     BigInteger,
     Column,
     Float,
@@ -41,6 +42,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+
+# JSONB on Postgres; portable JSON on every other dialect (SQLite for tests).
+JSONType = JSON().with_variant(JSONB(), "postgresql")
 
 log = logging.getLogger(__name__)
 
@@ -59,7 +63,7 @@ scenarios = Table(
     Column("scenario_id", String(64), primary_key=True),
     Column("name", String(256), nullable=False),
     Column("description", Text, nullable=True),
-    Column("perturbations", JSONB, nullable=False),
+    Column("perturbations", JSONType, nullable=False),
     Column("horizon_days", Integer, nullable=False),
     Column("seed", BigInteger, nullable=False),
     Column("disputed", Integer, nullable=False, server_default=text("0")),
@@ -91,7 +95,7 @@ events = Table(
     Column("watch_duration_sec", Float, nullable=True),
     Column("ad_impression", Integer, nullable=True),
     Column("ad_revenue_usd", Float, nullable=True),
-    Column("payload", JSONB, nullable=True),
+    Column("payload", JSONType, nullable=True),
 )
 
 observations = Table(
@@ -103,7 +107,7 @@ observations = Table(
     Column("subject_id", String(128), nullable=False, index=True),  # what was being observed
     Column("kind", String(64), nullable=False),                     # flag kind / sanitizer category
     Column("severity", String(16), nullable=True),
-    Column("evidence", JSONB, nullable=True),
+    Column("evidence", JSONType, nullable=True),
     Column("trace_id", String(64), nullable=True),
     Column("created_at", Float, nullable=False),
 )
@@ -117,8 +121,8 @@ syntheses = Table(
     Column("decision", String(16), nullable=False),  # accept | reject | escalate
     Column("confidence", Float, nullable=False),
     Column("rationale", Text, nullable=True),
-    Column("inputs", JSONB, nullable=True),          # references to observations
-    Column("output", JSONB, nullable=True),          # the committed artifact
+    Column("inputs", JSONType, nullable=True),          # references to observations
+    Column("output", JSONType, nullable=True),          # the committed artifact
     Column("disputed", Integer, nullable=False, server_default=text("0")),
     Column("trace_id", String(64), nullable=True),
     Column("created_at", Float, nullable=False),
@@ -132,7 +136,7 @@ baselines = Table(
     Column("value", Float, nullable=False),
     Column("unit", String(32), nullable=True),
     Column("period", String(32), nullable=True),
-    Column("source", JSONB, nullable=False),
+    Column("source", JSONType, nullable=False),
     Column("synthesis_id", String(32), ForeignKey("syntheses.synthesis_id"), nullable=False),
     Column("committed_at", Float, nullable=False),
 )
@@ -141,7 +145,7 @@ params = Table(
     "params",
     metadata,
     Column("scope", String(64), primary_key=True),  # algorithm name
-    Column("payload", JSONB, nullable=False),
+    Column("payload", JSONType, nullable=False),
     Column("updated_at", Float, nullable=False),
 )
 
@@ -152,7 +156,7 @@ evaluations = Table(
     Column("question_id", String(64), nullable=False, index=True),
     Column("answer_text", Text, nullable=False),
     Column("overall_score", Float, nullable=False),
-    Column("payload", JSONB, nullable=False),
+    Column("payload", JSONType, nullable=False),
     Column("created_at", Float, nullable=False),
 )
 
