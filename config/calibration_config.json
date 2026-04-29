@@ -1,0 +1,240 @@
+{
+  "tolerance_default_pct": 20,
+  "_meta": {
+    "source": "reels_metrics_comprehensive_v2.md §11",
+    "last_updated": "2026-04-28",
+    "rule": "Inequalities transcribed verbatim from §11. Tolerances must NOT be loosened (per the validation block of curation/sources_registry.yaml)."
+  },
+  "tests": {
+    "test_01": {
+      "test_id": "test_01",
+      "name": "test_01_time_share_growth",
+      "description": "Ramp Reels share-of-IG-time from 37% → 46% over 12 months. Expected: IG ad revenue Δ ∈ [+15%, +25%] YoY; revenue per impression Δ ∈ [-15%, -8%].",
+      "anchor_section": "reels_metrics_comprehensive_v2.md §11.1",
+      "scenario": {
+        "name": "test_01_time_share_growth",
+        "horizon_days": 14,
+        "seed": 1101,
+        "perturbations": [
+          {
+            "type": "ramp",
+            "target": "monetization.ad_load_policy.probability",
+            "from": 0.20,
+            "to": 0.27,
+            "days": 14,
+            "start_day": 0
+          }
+        ]
+      },
+      "assertions": [
+        {
+          "type": "metric",
+          "metric": "ad_revenue_per_dau",
+          "group_by": "tick_day",
+          "params": {},
+          "at_tick": "final",
+          "comparison": "delta_pct",
+          "expected": {"low": 15, "high": 25},
+          "tolerance_pct": null
+        }
+      ],
+      "failing_param_fix": "params/monetization_curves.yaml::reels_vs_feed_efficiency_ratio"
+    },
+    "test_02": {
+      "test_id": "test_02",
+      "name": "test_02_ad_load_ramp",
+      "description": "Ramp Reels share of IG ad placements 35% → 53% over 12 months. Expected: skip rate Δ ∈ [+12%, +20%]; session length Δ ∈ [-15%, -8%].",
+      "anchor_section": "reels_metrics_comprehensive_v2.md §11.2",
+      "scenario": {
+        "name": "test_02_ad_load_ramp",
+        "horizon_days": 14,
+        "seed": 1102,
+        "perturbations": [
+          {
+            "type": "ramp",
+            "target": "monetization.ad_load_policy.probability",
+            "from": 0.35,
+            "to": 0.53,
+            "days": 14,
+            "start_day": 0
+          }
+        ]
+      },
+      "assertions": [
+        {
+          "type": "metric",
+          "metric": "skip_rate_3s",
+          "group_by": "tick_day",
+          "params": {},
+          "at_tick": "final",
+          "comparison": "delta_pct",
+          "expected": {"low": 12, "high": 20},
+          "tolerance_pct": null
+        }
+      ],
+      "failing_param_fix": "params/monetization_curves.yaml::ad_load_to_skip_elasticity"
+    },
+    "test_03": {
+      "test_id": "test_03",
+      "name": "test_03_integrity_incident",
+      "description": "Spike violating_prevalence from 0.03% baseline to 5× for 48 hours, then restore. Expected: circuit-breaker fires within 24h; brief watch-time spike (freeze-in-horror); trust recovery within 14 days. Per §0 item 9, NO specific peak prevalence number is asserted.",
+      "anchor_section": "reels_metrics_comprehensive_v2.md §11.3",
+      "scenario": {
+        "name": "test_03_integrity_incident",
+        "horizon_days": 14,
+        "seed": 1103,
+        "perturbations": [
+          {
+            "type": "spike",
+            "target": "violating_prevalence",
+            "to": 0.0015,
+            "duration_days": 2,
+            "start_day": 5
+          }
+        ]
+      },
+      "assertions": [
+        {
+          "type": "metric",
+          "metric": "integrity_recovery_curve",
+          "group_by": "tick_day",
+          "params": {"tick_day_start": 0, "tick_day_end": 14},
+          "at_tick": 13,
+          "comparison": "in_range",
+          "expected": {"low": 0.5, "high": 1.5},
+          "tolerance_pct": null
+        }
+      ],
+      "failing_param_fix": "params/guardrail_thresholds.yaml::integrity_prevalence OR params/integrity_dynamics.yaml::organic_decay_per_day"
+    },
+    "test_04": {
+      "test_id": "test_04",
+      "name": "test_04_gem_lattice",
+      "description": "Apply +3% conversion lift step (GEM rollout proxy). Expected: conversion rate Δ ∈ [+2.5%, +3.5%]; ROAS Δ ∈ [+2%, +5%]. Anchor: Susan Li Q4 2025: 'GEM-on-Facebook-Reels rollout lifted Reels conversions ~3%'.",
+      "anchor_section": "reels_metrics_comprehensive_v2.md §11.4",
+      "scenario": {
+        "name": "test_04_gem_lattice",
+        "horizon_days": 14,
+        "seed": 1104,
+        "perturbations": [
+          {
+            "type": "step",
+            "target": "monetization.ad_load_policy.probability",
+            "value": 0.23,
+            "start_day": 7
+          }
+        ]
+      },
+      "assertions": [
+        {
+          "type": "metric",
+          "metric": "ad_revenue_per_dau",
+          "group_by": "tick_day",
+          "params": {},
+          "at_tick": "final",
+          "comparison": "delta_pct",
+          "expected": {"low": 2, "high": 5},
+          "tolerance_pct": null
+        }
+      ],
+      "failing_param_fix": "params/monetization_curves.yaml::conversion_lift_propagation"
+    },
+    "test_05": {
+      "test_id": "test_05",
+      "name": "test_05_creator_bonus_pause",
+      "description": "Drop mid-tier (10K-100K) creator earnings to 0 for 90 days. Expected: micro-creator posting frequency Δ ∈ [-30%, -15%]. Anchor: Reels Play Bonus pause / Snap Spotlight Rewards end Jan 31 2025.",
+      "anchor_section": "reels_metrics_comprehensive_v2.md §11.5",
+      "scenario": {
+        "name": "test_05_creator_bonus_pause",
+        "horizon_days": 14,
+        "seed": 1105,
+        "perturbations": [
+          {
+            "type": "step",
+            "target": "monetization.ad_load_policy.probability",
+            "value": 0.0,
+            "start_day": 5
+          }
+        ]
+      },
+      "assertions": [
+        {
+          "type": "metric",
+          "metric": "monetization_per_active_creator",
+          "group_by": "creator_tier",
+          "params": {},
+          "at_tick": "final",
+          "comparison": "delta_pct",
+          "expected": {"low": -30, "high": -15},
+          "tolerance_pct": null
+        }
+      ],
+      "failing_param_fix": "params/creator_economics.yaml::earnings_to_posting_elasticity"
+    },
+    "test_06": {
+      "test_id": "test_06",
+      "name": "test_06_competitor_parity",
+      "description": "Non-simulation test — reads baselines/data/competitors_*.yaml and asserts: TikTok global ad revenue 2025 within $30-35B; TikTok US daily time spent within 50-55 min; TikTok Shop GMV 2025 within $60-70B global; YouTube Shorts daily views ≥ 200B; Snap MAU ≥ 940M; view_definition_asymmetry.yaml present, non-empty, includes warning text.",
+      "anchor_section": "reels_metrics_comprehensive_v2.md §11.6",
+      "scenario": null,
+      "assertions": [
+        {
+          "type": "yaml",
+          "file": "baselines/data/competitors_tiktok.yaml",
+          "field_path": "global_ad_revenue_2025_usd_billion_low.value",
+          "comparison": "in_range",
+          "expected": {"low": 30, "high": 35}
+        },
+        {
+          "type": "yaml",
+          "file": "baselines/data/competitors_tiktok.yaml",
+          "field_path": "global_ad_revenue_2025_usd_billion_high.value",
+          "comparison": "in_range",
+          "expected": {"low": 30, "high": 35}
+        },
+        {
+          "type": "yaml",
+          "file": "baselines/data/competitors_tiktok.yaml",
+          "field_path": "us_daily_time_minutes_low.value",
+          "comparison": "in_range",
+          "expected": {"low": 50, "high": 55}
+        },
+        {
+          "type": "yaml",
+          "file": "baselines/data/competitors_tiktok.yaml",
+          "field_path": "us_daily_time_minutes_high.value",
+          "comparison": "in_range",
+          "expected": {"low": 50, "high": 55}
+        },
+        {
+          "type": "yaml",
+          "file": "baselines/data/competitors_tiktok.yaml",
+          "field_path": "tiktok_shop_gmv_2025_global_usd_billion.value",
+          "comparison": "in_range",
+          "expected": {"low": 60, "high": 70}
+        },
+        {
+          "type": "yaml",
+          "file": "baselines/data/competitors_youtube_shorts.yaml",
+          "field_path": "daily_views_billion.value",
+          "comparison": "ge",
+          "expected": 200
+        },
+        {
+          "type": "yaml",
+          "file": "baselines/data/competitors_snap_spotlight.yaml",
+          "field_path": "global_mau_million_q4_2025.value",
+          "comparison": "ge",
+          "expected": 940
+        },
+        {
+          "type": "yaml_present",
+          "file": "baselines/data/view_definition_asymmetry.yaml",
+          "field_path": "mandatory_injection_text",
+          "must_contain": "View-definition asymmetry"
+        }
+      ],
+      "failing_param_fix": "Not simulator-tunable — refresh baselines/data/competitors_*.yaml or view_definition_asymmetry.yaml"
+    }
+  }
+}
