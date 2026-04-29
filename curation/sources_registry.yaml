@@ -1,0 +1,176 @@
+_meta:
+  owner: "curation"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 5
+  description: |
+    Two-layer source registry. Section 1 maps the 44 reference-doc
+    section refs used across params/ and baselines/data/ to
+    primary_source ids. Section 2 (next message) catalogs the primary
+    sources with URLs and trust tiers. Section 3 (third message)
+    provides the audit validation block.
+
+# ===========================================================================
+# Section 1 — section_refs index
+# ---------------------------------------------------------------------------
+# Each key is a `source` string actually used in a yaml file under params/
+# or baselines/data/. Each value is the primary_source id (or a list of
+# primary_source ids when the section ref draws from multiple primaries).
+# Section 2 catalogs every primary_source id used here.
+# ===========================================================================
+
+section_refs:
+
+  # -- §0 Critical calibration notes (cross-cutting; lists multiple primaries)
+  "reels_metrics_comprehensive_v2.md §0":
+    - meta_q4_2025_press_release            # items 1, 2 (DAP and capex corrections)
+    - zuckerberg_q3_2025_earnings_call      # item 3 ($50B Reels run rate)
+    - tiktok_usds_coverage_aggregate        # item 4 (USDS deal closed)
+    - sensor_tower_cnbc_jan_2026            # items 5, 6 (35→53 ad share, 37→46 time share)
+    - igotanoffer_meta_pm_interview         # item 7 (rubric 25/30/25/20 community estimate)
+    - meta_dev_blog_view_unification_2025_04_21  # item 8 (view-def harmonization)
+    - meta_apology_feb_27_2025              # item 9 (Feb 26 incident; no peak number)
+
+  # -- §1 Meta family financials --------------------------------------------
+  "reels_metrics_comprehensive_v2.md §1.1": meta_q4_2025_press_release
+  "reels_metrics_comprehensive_v2.md §1.2": meta_8k_q4_2025
+  "reels_metrics_comprehensive_v2.md §1.3": meta_q4_2025_press_release
+  "reels_metrics_comprehensive_v2.md §1.4": meta_8k_q4_2025
+  "reels_metrics_comprehensive_v2.md §1.5": meta_q4_2025_press_release
+  "reels_metrics_comprehensive_v2.md §1.6": meta_8k_q4_2025
+  "reels_metrics_comprehensive_v2.md §1.7": susan_li_q4_2025_earnings_call
+
+  # -- §3 Instagram platform ------------------------------------------------
+  "reels_metrics_comprehensive_v2.md §3.1":
+    - techcrunch_mosseri_zuck_3b_announcement_2025_09_24
+    - meta_q4_2025_earnings_call_transcript    # Zuck "just shy of 2 billion" DAU
+  "reels_metrics_comprehensive_v2.md §3.2": cropink_via_emarketer
+  "reels_metrics_comprehensive_v2.md §3.3":
+    - emarketer_via_businesstats
+    - vidico_2025
+    - quantumrun_emarketer_alternative
+  "reels_metrics_comprehensive_v2.md §3.4":
+    - datareportal_april_2026
+    - backlinko_sprout_social_alternative
+
+  # -- §4 Reels product -----------------------------------------------------
+  "reels_metrics_comprehensive_v2.md §4.1":
+    - sensor_tower_cnbc_jan_2026
+    - susan_li_q4_2025_earnings_call            # +30% YoY US watch time
+    - meta_q4_2025_earnings_call_transcript     # Q4 transcript original-content / Edits-app stats
+    - meta_disclosure_q2_2023_daily_plays_stale # 200B daily plays (flag:stale)
+    - demandsage_via_vidico                     # 4.5B daily reshares
+  "reels_metrics_comprehensive_v2.md §4.2":
+    - zuckerberg_q3_2025_earnings_call          # $50B run rate
+    - sensor_tower_cnbc_jan_2026                # 35→53 share of IG ads
+    - tinuiti_via_emarketer                     # Q2 2025 impression mix
+    - emarketer_jan_2026_efficiency_commentary  # Reels-vs-Feed gap narrowing
+    - gupta_media                               # blended Meta CPM $6.59
+    - adamigo_2026                              # Tier-1/Tier-2 CPM ranges
+  "reels_metrics_comprehensive_v2.md §4.3":
+    - meta_announcement_creator_payouts_2026_03_18  # FY 2025 FB creator payouts $3B
+    - rowfix_creator_earnings                       # FB Reels CMP RPM ranges
+    - buffer_flowgent_zeely_rpm_aggregate           # IG Reels Bonuses tier RPM
+  "reels_metrics_comprehensive_v2.md §4.3, §11.5":
+    - meta_announcement_creator_payouts_2026_03_18
+    - snap_8k_q4_2025                               # Spotlight Rewards-end precedent
+  "reels_metrics_comprehensive_v2.md §4.4":
+    - vidico_2025
+    - sprout_social_insider                         # engagement by account size
+    - truefuture_hootsuite_dropoff                  # 3-second drop-off
+    - zebracat_2025_engagement                      # engagement by length
+    - derived_mosseri_send_weighting                # 3-5× send-to-like
+    - metricool_2025                                # 1B daily DM sends
+  "reels_metrics_comprehensive_v2.md §4.5": babbleboxx_skip_rate_metric
+  "reels_metrics_comprehensive_v2.md §4.6": meta_transparency_h1_2026
+  "reels_metrics_comprehensive_v2.md §4.6, §11.3":
+    - meta_transparency_h1_2026
+    - meta_apology_feb_27_2025                      # test_03 calibration anchor
+  "reels_metrics_comprehensive_v2.md §4.6, §9.5":
+    - meta_transparency_h1_2026
+    - meta_family_center                            # teen guardrail multipliers
+  "reels_metrics_comprehensive_v2.md §4.7":
+    - meta_apology_feb_27_2025
+    - cbs_news_april_2025_followup
+    - oecd_ai_incident_957
+  "reels_metrics_comprehensive_v2.md §4.7, §11.3":
+    - meta_apology_feb_27_2025
+    - oecd_ai_incident_957
+  "reels_metrics_comprehensive_v2.md §4.8": hypeauditor_state_of_influencer_marketing_2025
+  "reels_metrics_comprehensive_v2.md §4.8, §11.5":
+    - hypeauditor_state_of_influencer_marketing_2025
+    - meta_announcement_creator_payouts_2026_03_18
+
+  # -- §5 Competitor metrics ------------------------------------------------
+  "reels_metrics_comprehensive_v2.md §5.1.1":
+    - emarketer_warc_tiktok_ad_revenue_2025
+    - emarketer_via_roi_revolution                  # US ARPU
+    - miracuves_tiktok_arpu                         # global ARPU
+  "reels_metrics_comprehensive_v2.md §5.1.2":
+    - emarketer_via_digiday                         # US daily time 52-53.8 min
+    - electroiq_tiktok_global_time                  # global ~58 min
+    - datareportal_tiktok_global_time               # global ~95 min (variance)
+    - awisee_tiktok_sessions                        # 15-19 sessions/day
+  "reels_metrics_comprehensive_v2.md §5.1.3": momentum_works_via_dealstreetasia
+  "reels_metrics_comprehensive_v2.md §5.1.4":
+    - rowfix_creator_earnings                       # Creator Rewards RPM
+    - influencer_marketing_hub_pulse                # Pulse 50% revshare
+  "reels_metrics_comprehensive_v2.md §5.1.5": tiktok_usds_coverage_aggregate
+  "reels_metrics_comprehensive_v2.md §5.2":
+    - thewrap_imdb_mohan_cannes_lions_2025          # 200B daily views
+    - awisee_youtube_shorts                         # uploads / library
+    - alphabet_10k_2024                             # YouTube ad revenue 2024
+    - alphabet_8k_q4_2025                           # YouTube ad revenue 2025 / Q4
+    - variety_pichai_youtube_2025_revenue           # YouTube total >$60B / 325M subs
+    - influencer_marketing_hub_mediacube_shorts_rpm # Shorts RPM ranges
+    - youtube_help_shorts_definition                # 45% revshare; view def
+    - nielsen_gauge_via_mediapost                   # US TV viewing share
+    - loopex_zebracat_youtube_engagement            # engagement / retention
+  "reels_metrics_comprehensive_v2.md §5.3":
+    - snap_8k_q4_2025
+    - snap_newsroom_help                            # Spotlight Rewards / Monetization Program
+
+  # -- §6 View definition asymmetry -----------------------------------------
+  "reels_metrics_comprehensive_v2.md §6.1":
+    - meta_dev_blog_view_unification_2025_04_21     # IG/FB unified Views
+    - mosseri_ig_video_2025_01_22                   # "Sends, reach, and views" quote
+    - kolsquare_facebook_view                       # FB pre-change definition
+    - techcrunch_youtube_shorts_view_change         # Shorts 2025-03-31 change
+    - ppc_land_youtube_shorts_view_change           # Engaged Views parallel
+    - sprout_social_view_def                        # cross-platform summary
+    - tiktok_ads_help                               # TikTok view definition
+    - youtube_help_shorts_definition                # YouTube long-form / Shorts
+  "reels_metrics_comprehensive_v2.md §6.2":
+    - meta_dev_blog_view_unification_2025_04_21
+    - techcrunch_youtube_shorts_view_change
+    - tiktok_ads_help
+    - youtube_help_shorts_definition
+
+  # -- §9 Viewer segments (mostly synthesized seeds) ------------------------
+  "reels_metrics_comprehensive_v2.md §9.1": synthesized_seed_no_primary
+  "reels_metrics_comprehensive_v2.md §9.2": synthesized_seed_no_primary
+  "reels_metrics_comprehensive_v2.md §9.3": synthesized_seed_no_primary
+  "reels_metrics_comprehensive_v2.md §9.4":
+    - pew_dec_2025_teens_report
+    - pew_april_2026_teens_comparative_report
+    - brighterly_aggregation_2025
+  "reels_metrics_comprehensive_v2.md §9.5": meta_family_center
+
+  # -- §10 Ranking weights --------------------------------------------------
+  "reels_metrics_comprehensive_v2.md §10.1":
+    - mosseri_ig_video_2025_01_22                   # top-3 ranking signals
+    - creatorflow_2026                              # Originality Score / repetition penalty
+    - funnl_originality_score
+  "reels_metrics_comprehensive_v2.md §10.2": mosseri_ig_video_2025_01_22
+
+  # -- §11 Calibration acceptance criteria ----------------------------------
+  "reels_metrics_comprehensive_v2.md §11.2":
+    - sensor_tower_cnbc_jan_2026                    # 35→53 ad share ramp
+    - tinuiti_via_emarketer                         # Q2 2025 impression mix
+  "reels_metrics_comprehensive_v2.md §11.4":
+    - susan_li_q4_2025_earnings_call                # GEM-on-FB-Reels +3% lift
+    - meta_q4_2025_press_release                    # Q4 ad metrics anchors
+  "reels_metrics_comprehensive_v2.md §11.5":
+    - meta_announcement_creator_payouts_2026_03_18
+    - snap_8k_q4_2025                               # Spotlight Rewards end (directional)
+    - hypeauditor_state_of_influencer_marketing_2025
