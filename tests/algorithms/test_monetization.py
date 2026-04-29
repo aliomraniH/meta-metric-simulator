@@ -21,6 +21,10 @@ from substrate.writer import _prepare
 # -----------------------------------------------------------------------------
 
 def _impression(viewer_segment: str = "young_adult") -> dict:
+    # surface="feed" so the M11.5 Reels-vs-Feed efficiency multiplier does
+    # NOT apply to these unit tests — they verify pure eCPM sampling.
+    # Reels-surface behaviour is exercised end-to-end by the calibration
+    # runner.
     return {
         "scenario_id": "scn-mon",
         "tick_day": 5,
@@ -34,7 +38,7 @@ def _impression(viewer_segment: str = "young_adult") -> dict:
         "creator_id": "c-1",
         "creator_tier": "head",
         "reel_id": "r-ad-slot",
-        "surface": "reels_tab",
+        "surface": "feed",
         "pool": "unconnected",
         "rank_score": 0.5,
     }

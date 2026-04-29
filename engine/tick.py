@@ -72,8 +72,17 @@ async def run_tick(
     seq_counter = {"n": 1}  # mutable counter so all callees can advance it
 
     # --- 1. Perturbations -----------------------------------------------------
+    # Pre-build the monetization view so we can seed tick_state_bag with the
+    # current per-param values; perturbations then step them per tick.
+    monetization_curves = _monetization_view(params)
     tick_state_bag: dict[str, Any] = {
-        "monetization": {"ad_load_policy": {"probability": _DEFAULT_AD_LOAD_PROBABILITY}},
+        "monetization": {
+            "ad_load_policy": {"probability": _DEFAULT_AD_LOAD_PROBABILITY},
+            # Conversion-lift propagation lives in the bag so calibration
+            # test_04 (and any other GEM-style scenario) can step it via
+            # the perturbation system.  Default comes from monetization_curves.
+            "conversion_lift_propagation": float(monetization_curves["conversion_lift_propagation"]),
+        },
         "ranking_weights": _ranking_weights_view(params),
         "integrity_dynamics": {
             "organic_decay_per_day": float(
@@ -86,6 +95,15 @@ async def run_tick(
     tick_state_bag = apply_active_perturbations(tick_state_bag, perturbation_defs, tick_day)
 
     ad_load_policy = tick_state_bag["monetization"]["ad_load_policy"]
+    # Build a per-tick monetization-params dict that overrides the static
+    # conversion_lift_propagation with whatever the tick's perturbation
+    # produced.  algorithms/monetization.maybe_ad reads it from this dict.
+    monetization_params_this_tick = {
+        **monetization_curves,
+        "conversion_lift_propagation": float(
+            tick_state_bag["monetization"]["conversion_lift_propagation"]
+        ),
+    }
 
     # --- 2. Creator supply update --------------------------------------------
     last_earnings = state.scratch.get("last_tick_earnings_by_creator", {})
@@ -100,7 +118,8 @@ async def run_tick(
     earnings_this_tick: dict[str, float] = {}
     tick_events: list[dict[str, Any]] = []  # for guardrails read-only inspection
 
-    monetization_curves = _monetization_view(params)
+    # monetization_curves was already built above; we want the per-tick
+    # variant that carries the perturbed conversion_lift_propagation.
     ranking_params = _ranking_view(params)
     seg_props = _segment_props_view(params)
 
@@ -142,7 +161,7 @@ async def run_tick(
             # Decide ad vs organic engagement.  We do NOT chain both — an
             # ad slot replaces the organic engagement on this impression.
             ad_event = monetization.maybe_ad(
-                impression, ad_load_policy, monetization_curves, state.rng
+                impression, ad_load_policy, monetization_params_this_tick, state.rng
             )
             if ad_event is not None:
                 seq_counter["n"] = int(ad_event["intra_day_seq"]) + 1
@@ -157,7 +176,9 @@ async def run_tick(
                 continue
 
             engagement_events = engagement_response.respond(
-                viewer_state, impression, seg_props, state.rng
+                viewer_state, impression, seg_props, state.rng,
+                observed_ad_load_pct=float(ad_load_policy.get("probability", 0.0)),
+                ad_load_elasticity=float(monetization_curves.get("ad_load_to_skip_elasticity", 0.0)),
             )
             for ev in engagement_events:
                 seq_counter["n"] = int(ev["intra_day_seq"]) + 1
@@ -269,6 +290,12 @@ def _monetization_view(params: Mapping[str, Any]) -> dict[str, Any]:
         "ecpm_sd":      _v(ecpm, "sd", default=2.0),
         "ecpm_floor":   _v(ecpm, "floor", default=0.5),
         "ecpm_ceiling": _v(ecpm, "ceiling", default=25.0),
+        # M11.5 wirings — algorithms/monetization reads these directly.
+        "reels_vs_feed_efficiency_ratio": _v(mc, "reels_vs_feed_efficiency_ratio", default=0.90),
+        "conversion_lift_propagation":    _v(mc, "conversion_lift_propagation", default=1.0),
+        # Used by engine/tick to plumb ad-load → p_skip feedback into
+        # engagement_response (M11.5 wiring for calibration test_02).
+        "ad_load_to_skip_elasticity":     _v(mc, "ad_load_to_skip_elasticity", default=0.0),
     }
 
 

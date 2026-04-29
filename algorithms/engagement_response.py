@@ -48,11 +48,18 @@ _FALLBACK_PROPENSITIES: dict[str, float] = {
 _DEFAULT_REEL_DURATION = 15.0
 
 
+_BASELINE_AD_LOAD_PCT = 0.20
+
+
 def respond(
     viewer_state: Mapping[str, Any],
     impression: Mapping[str, Any],
     params: Mapping[str, Any],
     rng: random.Random,
+    *,
+    observed_ad_load_pct: float | None = None,
+    ad_load_elasticity: float = 0.0,
+    baseline_ad_load_pct: float = _BASELINE_AD_LOAD_PCT,
 ) -> list[dict[str, Any]]:
     """Sample engagement events for a single impression.
 
@@ -69,6 +76,19 @@ def respond(
             `p_skip`, completion-pct bounds, `view_end_threshold_pct`,
             and a `*_propensity` for each post-watch action.
         rng: injected random.Random — the only source of randomness.
+        observed_ad_load_pct: optional rolling estimate of the current
+            tick's observed ad load (count(ad_impression) / count(impression),
+            or the configured ad_load_policy probability as a fallback).
+            When provided alongside a non-zero `ad_load_elasticity`, p_skip
+            is modulated upward when observed ad load is above
+            `baseline_ad_load_pct`.  None means no modulation.
+        ad_load_elasticity: scaling factor for the ad-load → p_skip feedback
+            loop (per reels_metrics_comprehensive_v2.md §11.2; calibration
+            test_02 anchor).  Default 0.0 → no effect (preserves legacy
+            test behaviour).
+        baseline_ad_load_pct: ad-load level at which no p_skip modulation
+            occurs.  Defaults to 0.20 (the engine's default ad-load
+            probability).
 
     Returns:
         List of event dicts.  Always at least one of `skip`, `watch`, or
@@ -88,6 +108,19 @@ def respond(
     )
     skip_threshold = float(propensities["skip_threshold_sec"])
     p_skip = float(propensities["p_skip"])
+
+    # Ad-load → p_skip feedback (§11.2).  Higher ad load raises p_skip in
+    # proportion to elasticity; lower ad load can also lower it.  Clamped
+    # to [0, 1] so probability stays valid.
+    if observed_ad_load_pct is not None and ad_load_elasticity != 0.0:
+        baseline = max(float(baseline_ad_load_pct), 1e-9)
+        delta_frac = (float(observed_ad_load_pct) - baseline) / baseline
+        adjusted = p_skip * (1.0 + float(ad_load_elasticity) * delta_frac)
+        if adjusted < 0.0:
+            adjusted = 0.0
+        elif adjusted > 1.0:
+            adjusted = 1.0
+        p_skip = adjusted
 
     out: list[dict[str, Any]] = []
 

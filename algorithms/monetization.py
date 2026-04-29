@@ -26,6 +26,13 @@ _FALLBACK_ECPM_MEAN = 8.0
 _FALLBACK_ECPM_SD = 2.0
 _FALLBACK_ECPM_FLOOR = 0.5
 _FALLBACK_ECPM_CEILING = 30.0
+_FALLBACK_REELS_EFFICIENCY = 0.90
+_FALLBACK_CONVERSION_LIFT = 1.0
+
+# Surfaces that the §4.2 Reels-vs-Feed efficiency multiplier applies to.
+# Match both the canonical "reels_tab" the engine emits and a bare "reels"
+# in case scenario authors set the surface field directly.
+_REELS_SURFACES: frozenset[str] = frozenset({"reels", "reels_tab"})
 
 
 def maybe_ad(
@@ -45,8 +52,13 @@ def maybe_ad(
             before passing.
         params: monetization curves.  Recognised keys (with sensible
             fallbacks): `ecpm_mean`, `ecpm_sd`, `ecpm_floor`, `ecpm_ceiling`,
-            and an optional `by_segment` map keyed by viewer_segment for
-            per-segment overrides.
+            an optional `by_segment` map keyed by viewer_segment for
+            per-segment overrides, `reels_vs_feed_efficiency_ratio`
+            (multiplied into eCPM when the impression's surface is in
+            _REELS_SURFACES, per reels_metrics_comprehensive_v2.md §4.2),
+            and `conversion_lift_propagation` (multiplied into the final
+            ad_revenue_usd, used by calibration test_04 to model GEM-style
+            targeting lifts per §11.4).
         rng: injected random.Random.
 
     Returns:
@@ -59,9 +71,26 @@ def maybe_ad(
 
     segment = impression.get("viewer_segment")
     curve = _resolve_curve(segment, params)
-    ecpm = _sample_ecpm(curve, rng)
+
+    # Reels-vs-Feed eCPM efficiency (§4.2): Reels ad slots clear at
+    # ~0.85-0.95× Feed eCPM.  Apply only when the impression originated
+    # from a Reels surface; ads in other surfaces (Feed, Stories) are
+    # unmodified.  Applied INSIDE _sample_ecpm so the floor/ceiling
+    # clamp wraps the post-efficiency value — bounds are on what
+    # actually clears, not the pre-efficiency Feed-equivalent.
+    surface = impression.get("surface", "")
+    efficiency = 1.0
+    if surface in _REELS_SURFACES:
+        efficiency = float(params.get("reels_vs_feed_efficiency_ratio", _FALLBACK_REELS_EFFICIENCY))
+    ecpm = _sample_ecpm(curve, rng, efficiency=efficiency)
+
+    # Conversion lift propagation (§11.4): test_04 anchors a +3% GEM
+    # rollout proxy.  Default 1.0 → no effect; values >1 propagate the
+    # lift one-to-one into ad_revenue.
+    conversion_lift = float(params.get("conversion_lift_propagation", _FALLBACK_CONVERSION_LIFT))
+
     # Revenue per single impression: eCPM is "per 1000 impressions".
-    ad_revenue_usd = ecpm / 1000.0
+    ad_revenue_usd = (ecpm / 1000.0) * conversion_lift
 
     seq = int(impression.get("intra_day_seq", 0)) + 1
     return {
@@ -98,7 +127,12 @@ def _resolve_curve(segment: Any, params: Mapping[str, Any]) -> dict[str, float]:
     }
 
 
-def _sample_ecpm(curve: Mapping[str, float], rng: random.Random) -> float:
+def _sample_ecpm(
+    curve: Mapping[str, float],
+    rng: random.Random,
+    *,
+    efficiency: float = 1.0,
+) -> float:
     mean = curve["ecpm_mean"]
     sd = max(0.0, curve["ecpm_sd"])
     floor = curve["ecpm_floor"]
@@ -107,6 +141,7 @@ def _sample_ecpm(curve: Mapping[str, float], rng: random.Random) -> float:
         ceiling = floor
 
     raw = rng.gauss(mean, sd) if sd > 0.0 else mean
+    raw *= float(efficiency)
     if raw < floor:
         return floor
     if raw > ceiling:

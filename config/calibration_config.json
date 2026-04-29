@@ -119,8 +119,8 @@
         "perturbations": [
           {
             "type": "step",
-            "target": "monetization.ad_load_policy.probability",
-            "value": 0.23,
+            "target": "monetization.conversion_lift_propagation",
+            "value": 1.03,
             "start_day": 7
           }
         ]
