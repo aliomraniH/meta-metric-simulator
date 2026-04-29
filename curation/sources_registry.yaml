@@ -174,3 +174,567 @@ section_refs:
     - meta_announcement_creator_payouts_2026_03_18
     - snap_8k_q4_2025                               # Spotlight Rewards end (directional)
     - hypeauditor_state_of_influencer_marketing_2025
+
+# ===========================================================================
+# Section 2 — primary_sources catalog (skeleton pass)
+# ---------------------------------------------------------------------------
+# Skeleton entries for all 69 primary_source ids referenced by Section 1.
+# Each entry has only the structural minimum: url placeholder, type guess,
+# confidence guess, trust_tier guess, and verify_during_m12 flag.
+# A second pass (M6c-iii or M12 curation refresh) fills in real URLs,
+# aliases, and descriptions.
+# ===========================================================================
+
+primary_sources:
+
+  adamigo_2026:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  alphabet_10k_2024:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "sec_filing"
+    confidence: "high"
+    trust_tier: 1
+    verify_during_m12: true
+
+  alphabet_8k_q4_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "sec_filing"
+    confidence: "high"
+    trust_tier: 1
+    verify_during_m12: true
+
+  awisee_tiktok_sessions:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  awisee_youtube_shorts:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  babbleboxx_skip_rate_metric:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  backlinko_sprout_social_alternative:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  brighterly_aggregation_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  buffer_flowgent_zeely_rpm_aggregate:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  cbs_news_april_2025_followup:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  creatorflow_2026:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  cropink_via_emarketer:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  datareportal_april_2026:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  datareportal_tiktok_global_time:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  demandsage_via_vidico:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  derived_mosseri_send_weighting:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "derived"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  electroiq_tiktok_global_time:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  emarketer_jan_2026_efficiency_commentary:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  emarketer_via_businesstats:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  emarketer_via_digiday:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  emarketer_via_roi_revolution:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  emarketer_warc_tiktok_ad_revenue_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  funnl_originality_score:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  gupta_media:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  hypeauditor_state_of_influencer_marketing_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  igotanoffer_meta_pm_interview:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  influencer_marketing_hub_mediacube_shorts_rpm:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  influencer_marketing_hub_pulse:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  kolsquare_facebook_view:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  loopex_zebracat_youtube_engagement:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  meta_8k_q4_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "sec_filing"
+    confidence: "high"
+    trust_tier: 1
+    verify_during_m12: true
+
+  meta_announcement_creator_payouts_2026_03_18:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  meta_apology_feb_27_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  meta_dev_blog_view_unification_2025_04_21:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  meta_disclosure_q2_2023_daily_plays_stale:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  meta_family_center:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  meta_q4_2025_earnings_call_transcript:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "earnings"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  meta_q4_2025_press_release:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "earnings"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  meta_transparency_h1_2026:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  metricool_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  miracuves_tiktok_arpu:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  momentum_works_via_dealstreetasia:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  mosseri_ig_video_2025_01_22:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  nielsen_gauge_via_mediapost:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  oecd_ai_incident_957:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  pew_april_2026_teens_comparative_report:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  pew_dec_2025_teens_report:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  ppc_land_youtube_shorts_view_change:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  quantumrun_emarketer_alternative:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  rowfix_creator_earnings:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  sensor_tower_cnbc_jan_2026:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  snap_8k_q4_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "sec_filing"
+    confidence: "high"
+    trust_tier: 1
+    verify_during_m12: true
+
+  snap_newsroom_help:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  sprout_social_insider:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  sprout_social_view_def:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  susan_li_q4_2025_earnings_call:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  synthesized_seed_no_primary:
+    url: "N/A"
+    accessed_date: "2026-04-28"
+    type: "synthesized"
+    confidence: "low"
+    trust_tier: 4
+    verify_during_m12: false
+
+  techcrunch_mosseri_zuck_3b_announcement_2025_09_24:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  techcrunch_youtube_shorts_view_change:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  thewrap_imdb_mohan_cannes_lions_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  tiktok_ads_help:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  tiktok_usds_coverage_aggregate:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  tinuiti_via_emarketer:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  truefuture_hootsuite_dropoff:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  variety_pichai_youtube_2025_revenue:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  vidico_2025:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  youtube_help_shorts_definition:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
+
+  zebracat_2025_engagement:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "industry"
+    confidence: "medium"
+    trust_tier: 3
+    verify_during_m12: true
+
+  zuckerberg_q3_2025_earnings_call:
+    url: "PLACEHOLDER"
+    accessed_date: "2026-04-28"
+    type: "public_statement"
+    confidence: "high"
+    trust_tier: 2
+    verify_during_m12: true
