@@ -84,6 +84,9 @@ def update_supply(
     # Not enough history yet to apply the lagged signal — leave rate alone
     # but persist the appended history so the next tick can act on it.
     if len(history) <= lag_days:
+        next_state["posts_today"] = _posts_today_from_rate(
+            next_state.get("posting_rate_per_day", 0.0)
+        )
         return next_state
 
     effective_earnings = float(history[0])
@@ -92,6 +95,9 @@ def update_supply(
     # leaving the posting rate unchanged so a brand-new creator with no
     # baseline doesn't have their rate yanked to zero on the first tick.
     if baseline_earnings <= 0.0:
+        next_state["posts_today"] = _posts_today_from_rate(
+            next_state.get("posting_rate_per_day", 0.0)
+        )
         return next_state
 
     earnings_ratio = effective_earnings / baseline_earnings
@@ -100,7 +106,19 @@ def update_supply(
 
     smoothed = (1.0 - smoothing) * current_rate + smoothing * target_rate
     next_state["posting_rate_per_day"] = _clamp(smoothed, floor, ceiling)
+    next_state["posts_today"] = _posts_today_from_rate(next_state["posting_rate_per_day"])
     return next_state
+
+
+def _posts_today_from_rate(rate: float) -> int:
+    """Deterministic per-tick post count derived from the daily rate.
+
+    Uses banker's rounding (round-half-to-even via Python's built-in round).
+    Negative rates clamp to 0.  This is rng-free so the algorithm contract
+    stays deterministic; the engine emits posts_today creator_post events
+    per tick with reel_ids drawn from the creator's existing pool.
+    """
+    return max(0, int(round(float(rate))))
 
 
 def _clamp(x: float, lo: float, hi: float) -> float:

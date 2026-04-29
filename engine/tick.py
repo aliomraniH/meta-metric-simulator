@@ -114,6 +114,49 @@ async def run_tick(
         next_creators[cid] = creator_response.update_supply(cstate, earnings, creator_econ)
     state.creators = next_creators
 
+    # --- 2.5. Emit creator_post events ---------------------------------------
+    # Each creator with posts_today > 0 produces that many creator_post rows.
+    # reel_id is drawn from the creator's existing pool in state.reels so
+    # ad_impression events on the same reel JOIN cleanly via reel_id (the
+    # monetization_per_active_creator metric depends on this).
+    creator_to_reels: dict[str, list[str]] = {}
+    for rid, reel in state.reels.items():
+        owner = reel.get("creator_id")
+        if owner:
+            creator_to_reels.setdefault(owner, []).append(rid)
+
+    for cid in sorted(state.creators.keys()):
+        cstate = state.creators[cid]
+        posts_today = int(cstate.get("posts_today", 0) or 0)
+        if posts_today <= 0:
+            continue
+        creator_reels = creator_to_reels.get(cid)
+        if not creator_reels:
+            continue
+        for p in range(posts_today):
+            reel_id = creator_reels[p % len(creator_reels)]
+            reel = state.reels[reel_id]
+            seq = seq_counter["n"]
+            seq_counter["n"] = seq + 1
+            timestamp = float(tick_day * 86400 + seq)
+            await writer.write({
+                "scenario_id":         scenario_id,
+                "tick_day":            tick_day,
+                "intra_day_seq":       seq,
+                "timestamp":           timestamp,
+                "event_type":          "creator_post",
+                "creator_id":          cid,
+                "creator_tier":        cstate.get("tier"),
+                "reel_id":             reel_id,
+                "reel_duration_sec":   reel.get("duration_sec"),
+                "reel_topic_cluster":  reel.get("topic_cluster"),
+                "payload": {
+                    "posts_today": posts_today,
+                    "post_index": p,
+                    "posting_rate_per_day": float(cstate.get("posting_rate_per_day", 0.0)),
+                },
+            })
+
     # --- 3. Per-viewer ranking + engagement ----------------------------------
     earnings_this_tick: dict[str, float] = {}
     tick_events: list[dict[str, Any]] = []  # for guardrails read-only inspection
