@@ -1,0 +1,263 @@
+{
+  "baselines_hashes": {
+    "data/competitors_snap_spotlight.yaml": "d5da4d46ba21169f5275421bfa8c8b7309817d44fc6275fc4a491f6b4dc86919",
+    "data/competitors_tiktok.yaml": "2de8a249cf58d6bc4197a710e10ecfda56b1bb5dfed2e1a24c745b45ffa4b9b2",
+    "data/competitors_youtube_shorts.yaml": "d6c2953fa7968c3346d987b78afaacfa72c40437e5a248620da0ae95c4c0582c",
+    "data/family_scale.yaml": "88190a7a294e0d0297259058ced2450f83cf5480e8f95c52b48c833c92a48880",
+    "data/instagram_platform.yaml": "3f8f521aaa06efc4e5b260dafa1816e641abecd69b714f54cbb798b0d8cd35b0",
+    "data/reels_creator.yaml": "9f07f40a1697b5210e047d6c2f357d7f8624f8091aacdfafea2f2aadf0bd3124",
+    "data/reels_engagement.yaml": "81fbc48a9ce1de3cd1d633a55e70579ee37be13c30c7c7cf8609333c5ba1dffa",
+    "data/reels_integrity.yaml": "51edcd3ce423003f857ce5f04d3a1821c4f1d8b61b82ad0318314444b0df1365",
+    "data/reels_monetization.yaml": "41343ae21ba6988d84151694d1e47a041b9912c717acb133bf959e30e62fae28",
+    "data/reels_product.yaml": "bb4d54f984e54004b12d4c07b51e3d2bb3e5a447d28b3fd77af6ebeba9db1f2d",
+    "data/reels_regional.yaml": "b6c7df56946a79691f79d04e427304f78f2d9e446e8f519c373089b217d12730",
+    "data/view_definition_asymmetry.yaml": "49e20342a1f322aeb08dff1f28ab200fb1d581b0fb2a8913c71795cc590d4c7a"
+  },
+  "calibration_config_hash": "e66455786cbd78558cf78296e5c1c32f38a9100f8230fe8ba4154a2092aba27b",
+  "git_head": "514694889951712c41a10ba2312aa1f821b07c8d",
+  "locked_at": 1777503895.3645518,
+  "locked_at_human": "2026-04-29T23:04:55Z",
+  "params_hashes": {
+    "params/creator_economics.yaml": "1b75f74662b646e2ed3a86ce2ed091ea12be11e3c674de3bbef8e501e267ceb2",
+    "params/guardrail_thresholds.yaml": "985d08e7f018eadc3405c9ea8db2b5789e53836372a59133b83b0108a5248558",
+    "params/integrity_dynamics.yaml": "89569566be617a374d1566eec6e501fe940f43b717a163597e95223a1b8d85a7",
+    "params/monetization_curves.yaml": "3212ef27a989cc801f7ad88d5d6f99aa5d20ebac406a136c82d57b4dd6b356ba",
+    "params/ranking_weights.yaml": "b0dd20b53f329d0dd3b662c88bd8c0e3c177ded3ac70289fdc30d98c558ad0c0",
+    "params/segment_propensities.yaml": "0ddc4a63dc41614d517bf1fe3061046a8c0817e6fd9267ae00f71ab9dd899ab3"
+  },
+  "results": [
+    {
+      "assertions": [
+        {
+          "actual": 23.700424447375156,
+          "comparison": "delta_pct",
+          "detail": "band [12.000, 30.000] (\u00b120.0% of [15.0, 25.0])",
+          "expected": {
+            "high": 25,
+            "low": 15
+          },
+          "gap": 18.502122236875778,
+          "group_by": "tick_day",
+          "metric": "ad_revenue_per_dau",
+          "passed": true,
+          "tolerance_pct": 20.0
+        }
+      ],
+      "error": null,
+      "failing_param_fix": null,
+      "passed": true,
+      "runtime_sec": 1.808,
+      "scenario_id": "01KQDQSQ7H1FWYY8653DGHS79M",
+      "test_id": "test_01"
+    },
+    {
+      "assertions": [
+        {
+          "actual": 18.965517241379317,
+          "comparison": "delta_pct",
+          "detail": "band [9.600, 24.000] (\u00b120.0% of [12.0, 20.0])",
+          "expected": {
+            "high": 20,
+            "low": 12
+          },
+          "gap": 18.53448275862073,
+          "group_by": "tick_day",
+          "metric": "skip_rate_3s",
+          "passed": true,
+          "tolerance_pct": 20.0
+        }
+      ],
+      "error": null,
+      "failing_param_fix": null,
+      "passed": true,
+      "runtime_sec": 1.416,
+      "scenario_id": "01KQDQSS01G9SNTCMDNZQX61MC",
+      "test_id": "test_02"
+    },
+    {
+      "assertions": [
+        {
+          "actual": 1.0,
+          "comparison": "in_range",
+          "detail": "in [0.5, 1.5]",
+          "expected": {
+            "high": 1.5,
+            "low": 0.5
+          },
+          "gap": 0.0,
+          "group_by": "tick_day",
+          "metric": "integrity_recovery_curve",
+          "passed": true,
+          "tolerance_pct": 20.0
+        }
+      ],
+      "error": null,
+      "failing_param_fix": null,
+      "passed": true,
+      "runtime_sec": 1.88,
+      "scenario_id": "01KQDQSTC999JFE03F7K4QXMHC",
+      "test_id": "test_03"
+    },
+    {
+      "assertions": [
+        {
+          "actual": 3.198175352325904,
+          "comparison": "delta_pct",
+          "detail": "band [1.600, 6.000] (\u00b120.0% of [2.0, 5.0])",
+          "expected": {
+            "high": 5,
+            "low": 2
+          },
+          "gap": -8.623561362117028,
+          "group_by": "tick_day",
+          "metric": "ad_revenue_per_dau",
+          "passed": true,
+          "tolerance_pct": 20.0
+        }
+      ],
+      "error": null,
+      "failing_param_fix": null,
+      "passed": true,
+      "runtime_sec": 1.686,
+      "scenario_id": "01KQDQSW717NCADSWFVJ9B44CK",
+      "test_id": "test_04"
+    },
+    {
+      "assertions": [
+        {
+          "actual": -20.0,
+          "comparison": "delta_pct",
+          "detail": "band [-36.000, -12.000] (\u00b120.0% of [-30.0, -15.0])",
+          "expected": {
+            "high": -15,
+            "low": -30
+          },
+          "gap": 11.11111111111111,
+          "group_by": "tick_day",
+          "metric": "creator_posts_per_active_creator",
+          "passed": true,
+          "tolerance_pct": 20.0
+        }
+      ],
+      "error": null,
+      "failing_param_fix": null,
+      "passed": true,
+      "runtime_sec": 1.943,
+      "scenario_id": "01KQDQSXVQFW4ZVN6GRRZVGARE",
+      "test_id": "test_05"
+    },
+    {
+      "assertions": [
+        {
+          "actual": 32,
+          "comparison": "in_range",
+          "detail": "in [30.0, 35.0]",
+          "expected": {
+            "high": 35,
+            "low": 30
+          },
+          "gap": 0.0,
+          "group_by": null,
+          "metric": null,
+          "passed": true,
+          "tolerance_pct": 20.0
+        },
+        {
+          "actual": 33,
+          "comparison": "in_range",
+          "detail": "in [30.0, 35.0]",
+          "expected": {
+            "high": 35,
+            "low": 30
+          },
+          "gap": 0.0,
+          "group_by": null,
+          "metric": null,
+          "passed": true,
+          "tolerance_pct": 20.0
+        },
+        {
+          "actual": 52,
+          "comparison": "in_range",
+          "detail": "in [50.0, 55.0]",
+          "expected": {
+            "high": 55,
+            "low": 50
+          },
+          "gap": 0.0,
+          "group_by": null,
+          "metric": null,
+          "passed": true,
+          "tolerance_pct": 20.0
+        },
+        {
+          "actual": 53.8,
+          "comparison": "in_range",
+          "detail": "in [50.0, 55.0]",
+          "expected": {
+            "high": 55,
+            "low": 50
+          },
+          "gap": 0.0,
+          "group_by": null,
+          "metric": null,
+          "passed": true,
+          "tolerance_pct": 20.0
+        },
+        {
+          "actual": 64.3,
+          "comparison": "in_range",
+          "detail": "in [60.0, 70.0]",
+          "expected": {
+            "high": 70,
+            "low": 60
+          },
+          "gap": 0.0,
+          "group_by": null,
+          "metric": null,
+          "passed": true,
+          "tolerance_pct": 20.0
+        },
+        {
+          "actual": 200,
+          "comparison": "ge",
+          "detail": "\u2265 200.0",
+          "expected": 200,
+          "gap": 0.0,
+          "group_by": null,
+          "metric": null,
+          "passed": true,
+          "tolerance_pct": 20.0
+        },
+        {
+          "actual": 946,
+          "comparison": "ge",
+          "detail": "\u2265 940.0",
+          "expected": 940,
+          "gap": 6.0,
+          "group_by": null,
+          "metric": null,
+          "passed": true,
+          "tolerance_pct": 20.0
+        },
+        {
+          "actual": "\u26a0\ufe0f View-definition asymmetry: Instagram, Facebook, YouTube Shorts, and TikTok al\u2026",
+          "comparison": "yaml_present",
+          "detail": "baselines/data/view_definition_asymmetry.yaml::mandatory_injection_text must contain 'View-definition asymmetry'",
+          "expected": "View-definition asymmetry",
+          "gap": null,
+          "group_by": null,
+          "metric": null,
+          "passed": true,
+          "tolerance_pct": null
+        }
+      ],
+      "error": null,
+      "failing_param_fix": null,
+      "passed": true,
+      "runtime_sec": 0.053,
+      "scenario_id": null,
+      "test_id": "test_06"
+    }
+  ]
+}

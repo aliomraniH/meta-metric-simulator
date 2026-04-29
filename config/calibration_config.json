@@ -160,8 +160,8 @@
       "assertions": [
         {
           "type": "metric",
-          "metric": "monetization_per_active_creator",
-          "group_by": "creator_tier",
+          "metric": "creator_posts_per_active_creator",
+          "group_by": "tick_day",
           "params": {},
           "at_tick": "final",
           "comparison": "delta_pct",

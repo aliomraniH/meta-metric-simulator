@@ -38,6 +38,7 @@ EXPECTED_LEADING_METRIC_NAMES: set[str] = {
     "ad_impressions_per_session",
     "ad_revenue_per_dau",
     "violating_view_share",
+    "creator_posts_per_active_creator",  # M11.5d — calibration test_05 anchor
 }
 
 
@@ -64,15 +65,16 @@ def runtime(session_factory):
 # 1. Discovery
 # -----------------------------------------------------------------------------
 
-def test_runtime_discovers_all_9_leading_metrics(runtime):
+def test_runtime_discovers_all_leading_metrics(runtime):
     leading = runtime.list_metrics(layer="leading")
     names = {m.name for m in leading}
     assert names == EXPECTED_LEADING_METRIC_NAMES, (
         f"missing: {EXPECTED_LEADING_METRIC_NAMES - names}; "
         f"unexpected: {names - EXPECTED_LEADING_METRIC_NAMES}"
     )
-    assert runtime.stats["files_loaded"] >= 9
-    assert runtime.stats["by_layer"]["leading"] == 9
+    expected_count = len(EXPECTED_LEADING_METRIC_NAMES)
+    assert runtime.stats["files_loaded"] >= expected_count
+    assert runtime.stats["by_layer"]["leading"] == expected_count
 
 
 # -----------------------------------------------------------------------------
