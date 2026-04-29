@@ -1,0 +1,102 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    Reels integrity baselines from §4.6 (Meta Transparency Center H1
+    2026) and §4.7 (Feb 26 2025 incident) of
+    reels_metrics_comprehensive_v2.md.  Platform-wide prevalence
+    figures are public_statement / high.  Reels-specific prevalence
+    is flag:not_disclosed — IG platform-wide is used as proxy per
+    §4.6.  Per §0 item 9, the Feb 26 2025 incident anchor MUST NOT
+    use a specific peak prevalence number.  The verbatim Meta apology
+    is preserved here for reference; the spike multiplier seed lives
+    in params/integrity_dynamics.yaml.
+
+# ---------------------------------------------------------------------------
+# Platform-wide prevalence (Meta Transparency Center H1 2026, §4.6)
+# ---------------------------------------------------------------------------
+
+violent_graphic_prevalence_fb_pct:
+  value: 0.155
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Meta Transparency Center H1 2026; range 0.15-0.16% (down from 0.19-0.20%); recorded as midpoint."
+
+adult_nudity_prevalence_ig_pct:
+  value: 0.10
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Meta Transparency Center H1 2026; range 0.09-0.11% (up from 0.06-0.07%, methodology change); recorded as midpoint."
+
+bullying_harassment_proactive_detection_decline_pct:
+  value: 20
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Social Media Today: Bullying & harassment proactive detection declined ~20% over last 3 quarters."
+
+enforcement_precision_pct:
+  value: 0.1
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Meta Transparency Center H1 2026: <0.1% of content removed incorrectly. Used as a sanity check on synthetic guardrail tuning."
+
+# ---------------------------------------------------------------------------
+# Reels-specific prevalence — flag:not_disclosed
+# ---------------------------------------------------------------------------
+
+reels_specific_prevalence:
+  value: null
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "flag:not_disclosed. Meta does not publicly disclose Reels-specific prevalence. Use IG platform-wide adult_nudity_prevalence_ig_pct (0.09-0.11%) as proxy per §4.6."
+
+# ---------------------------------------------------------------------------
+# Feb 26 2025 Reels integrity incident (§4.7) — calibration test_03 anchor
+# ---------------------------------------------------------------------------
+# Note: build prompt referenced "feb_2026" but the reference doc dates
+# the incident as Feb 25-26 2025.  Per the REFERENCE_DOC_INDEX
+# conflict-resolution rule (reference doc wins), the canonical key is
+# feb_2025_incident_anchor.
+
+feb_2025_incident_anchor:
+  date: "2025-02-25"
+  apology_date: "2025-02-27"
+  source: "reels_metrics_comprehensive_v2.md §4.7"
+  provenance: "public_statement"
+  confidence: "high"
+  what_happened: |
+    Algorithmic failure surfaced graphic violent and (in some cases)
+    sexual content in Reels feeds, including for users with Sensitive
+    Content Control on highest setting.  Occurred ~1 month after Meta's
+    Jan 2025 announcement to (a) end third-party fact-checking in favor
+    of Community Notes, (b) scale back automated moderation to extreme
+    violations only.
+  verbatim_apology: |
+    "We have fixed an error that caused some users to see content in their Instagram Reels feed that should not have been recommended. We apologize for the mistake."
+  apology_speaker: "Meta spokesperson"
+  apology_event: "Meta apology, February 27 2025"
+  cataloged_as: "OECD AI Incident #957"
+  aftermath_note: |
+    CBS News April 2025 follow-up identified 600+ accounts pushing
+    graphic violence still active with $1K+/day economics.  No public
+    root-cause technical explanation from Meta.
+  calibration_use: |
+    Spike violating_prevalence for 48 hours, expect circuit-breaker
+    fires within 24h, brief watch-time spike (freeze-in-horror), recovery
+    within 14 days.  Per §0 item 9, do NOT use a specific peak
+    prevalence number — Meta never published one.  The spike multiplier
+    seed (5x baseline) lives in params/integrity_dynamics.yaml as
+    feb_2025_incident_replay_factor.
+  no_published_peak:
+    value: true
+    source: "reels_metrics_comprehensive_v2.md §0"
+    provenance: "public_statement"
+    confidence: "high"
+    note: "§0 item 9: Meta never published a peak prevalence number for the incident; test_03 uses spike framing only."

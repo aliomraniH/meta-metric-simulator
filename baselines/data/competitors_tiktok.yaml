@@ -1,0 +1,206 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    TikTok competitor baselines from §5.1 of
+    reels_metrics_comprehensive_v2.md.  ByteDance is private;
+    financials are eMarketer / WARC / Digiday estimates with medium
+    confidence.  TikTok Shop GMV is Momentum Works via DealStreetAsia.
+    The §5.1.5 USDS divestiture status block is public_statement /
+    high — per §0 item 4, retire any "pending divestiture" framing.
+
+# ---------------------------------------------------------------------------
+# Financials (§5.1.1)
+# ---------------------------------------------------------------------------
+
+global_ad_revenue_2025_usd_billion_low:
+  value: 32
+  source: "reels_metrics_comprehensive_v2.md §5.1.1"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "WARC ~$32.4B, +24.5% YoY. ByteDance is private; figures are analyst estimates."
+
+global_ad_revenue_2025_usd_billion_high:
+  value: 33
+  source: "reels_metrics_comprehensive_v2.md §5.1.1"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "eMarketer ~$33B. Range bracket for test_06_competitor_parity ($30-35B band)."
+
+us_arpu_2024_usd:
+  value: 96.71
+  source: "reels_metrics_comprehensive_v2.md §5.1.1"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "ROI Revolution / eMarketer."
+
+us_arpu_2026_projected_usd:
+  value: 130.31
+  source: "reels_metrics_comprehensive_v2.md §5.1.1"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "ROI Revolution / eMarketer projection."
+
+global_arpu_2023_usd:
+  value: 11
+  source: "reels_metrics_comprehensive_v2.md §5.1.1"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Miracuves."
+
+global_arpu_2024_usd:
+  value: 16
+  source: "reels_metrics_comprehensive_v2.md §5.1.1"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Miracuves."
+
+# ---------------------------------------------------------------------------
+# Engagement (§5.1.2)
+# ---------------------------------------------------------------------------
+
+us_daily_time_minutes_low:
+  value: 52
+  source: "reels_metrics_comprehensive_v2.md §5.1.2"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Digiday / eMarketer 2025; range bottom."
+
+us_daily_time_minutes_high:
+  value: 53.8
+  source: "reels_metrics_comprehensive_v2.md §5.1.2"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Digiday / eMarketer 2025; range top. Calibration anchor for test_06_competitor_parity (50-55 min band)."
+
+us_daily_time_yoy_decline_pct:
+  value: 6.9
+  source: "reels_metrics_comprehensive_v2.md §5.1.2"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Digiday / eMarketer; declining 6.9% YoY. Projected 50 min in 2026."
+
+global_daily_time_minutes_electroiq:
+  value: 58
+  source: "reels_metrics_comprehensive_v2.md §5.1.2"
+  provenance: "industry"
+  confidence: "low"
+  note: "Electro IQ. Methodology variance with DataReportal 95-min figure."
+
+global_daily_time_minutes_datareportal:
+  value: 95
+  source: "reels_metrics_comprehensive_v2.md §5.1.2"
+  provenance: "industry"
+  confidence: "low"
+  note: "DataReportal. Methodology variance with Electro IQ 58-min figure."
+
+# ---------------------------------------------------------------------------
+# TikTok Shop GMV (§5.1.3) — Momentum Works
+# ---------------------------------------------------------------------------
+
+tiktok_shop_gmv_2025_global_usd_billion:
+  value: 64.3
+  source: "reels_metrics_comprehensive_v2.md §5.1.3"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Momentum Works via DealStreetAsia. Calibration anchor for test_06_competitor_parity ($60-70B band)."
+
+tiktok_shop_gmv_2025_global_yoy_pct:
+  value: 94
+  source: "reels_metrics_comprehensive_v2.md §5.1.3"
+  provenance: "industry"
+  confidence: "medium"
+
+tiktok_shop_gmv_2025_us_usd_billion:
+  value: 15.1
+  source: "reels_metrics_comprehensive_v2.md §5.1.3"
+  provenance: "industry"
+  confidence: "medium"
+  note: "+68% YoY."
+
+tiktok_shop_gmv_2025_indonesia_usd_billion:
+  value: 13.1
+  source: "reels_metrics_comprehensive_v2.md §5.1.3"
+  provenance: "industry"
+  confidence: "medium"
+
+tiktok_shop_gmv_2025_sea_usd_billion:
+  value: 45.6
+  source: "reels_metrics_comprehensive_v2.md §5.1.3"
+  provenance: "industry"
+  confidence: "medium"
+  note: "SEA aggregate +100% YoY."
+
+# ---------------------------------------------------------------------------
+# Creator economics (§5.1.4)
+# ---------------------------------------------------------------------------
+
+creator_rewards_rpm_us_usd_low:
+  value: 0.50
+  source: "reels_metrics_comprehensive_v2.md §5.1.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Rowfix / Shortimize: Creator Rewards RPM (US) per 1K qualified views (≥5s, FYP, unique viewer)."
+
+creator_rewards_rpm_us_usd_high:
+  value: 1.00
+  source: "reels_metrics_comprehensive_v2.md §5.1.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Rowfix / Shortimize: range top."
+
+pulse_creator_revshare_pct:
+  value: 50
+  source: "reels_metrics_comprehensive_v2.md §5.1.4"
+  provenance: "public_statement"
+  confidence: "medium"
+  note: "Influencer Marketing Hub: Pulse revshare 50% to creators on top 4% of videos in 12 categories (100K+ followers); active April 2026."
+
+# ---------------------------------------------------------------------------
+# USDS divestiture (§5.1.5) — public_statement / high
+# Per §0 item 4: retire any "pending divestiture" framing. Deal is CLOSED.
+# ---------------------------------------------------------------------------
+
+usds_deal_status:
+  status: "closed"
+  closure_date: "2026-01-22"
+  joint_venture_name: "TikTok USDS Joint Venture LLC"
+  source: "reels_metrics_comprehensive_v2.md §5.1.5"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Per §0 item 4: retire any 'pending divestiture' framing. Algorithm licensed from ByteDance, retrained on US user data, hosted on Oracle Cloud."
+  ownership_pct:
+    oracle:
+      value: 15
+      source: "reels_metrics_comprehensive_v2.md §5.1.5"
+      provenance: "public_statement"
+      confidence: "high"
+    silver_lake:
+      value: 15
+      source: "reels_metrics_comprehensive_v2.md §5.1.5"
+      provenance: "public_statement"
+      confidence: "high"
+    mgx:
+      value: 15
+      source: "reels_metrics_comprehensive_v2.md §5.1.5"
+      provenance: "public_statement"
+      confidence: "high"
+      note: "MGX (Abu Dhabi); Oracle + Silver Lake + MGX combined ~45%."
+    existing_bytedance_investors:
+      value: 30
+      source: "reels_metrics_comprehensive_v2.md §5.1.5"
+      provenance: "public_statement"
+      confidence: "high"
+    bytedance_retained:
+      value: 19.9
+      source: "reels_metrics_comprehensive_v2.md §5.1.5"
+      provenance: "public_statement"
+      confidence: "high"
+      note: "Capped below 20% statutory threshold."
+  ceo: "Adam Presser"
+  cso: "Will Farrell"
+  board_includes: ["Shou Chew"]
+  oracle_outage_dates: ["2026-01-late", "2026-03-03"]
+  warner_treasury_fee_question_date: "2026-03-17"

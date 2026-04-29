@@ -1,0 +1,155 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    Snap Spotlight competitor baselines from §5.3 of
+    reels_metrics_comprehensive_v2.md.  All numbers come from Snap's
+    Q4 2025 8-K (released Feb 4 2026) and so carry sec_filing / high.
+    Spotlight-specific MAU and share-of-content-time are
+    flag:not_disclosed.  The Spotlight Rewards program ended Jan 31
+    2025 and was replaced by the Snap Monetization Program (Feb 1
+    2025) — public_statement / high.
+
+# ---------------------------------------------------------------------------
+# Snap-wide DAU / MAU (§5.3)
+# ---------------------------------------------------------------------------
+
+global_dau_million_q4_2025:
+  value: 474
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Snap 8-K Q4 2025; -3M QoQ."
+
+global_mau_million_q4_2025:
+  value: 946
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Snap 8-K Q4 2025; +51M / +6% YoY; +3M QoQ. Calibration anchor for test_06_competitor_parity (≥940M band)."
+
+global_mau_yoy_pct:
+  value: 6
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "sec_filing"
+  confidence: "high"
+
+# ---------------------------------------------------------------------------
+# Regional DAU (§5.3)
+# ---------------------------------------------------------------------------
+
+regional_dau:
+  na_million:
+    value: 94
+    source: "reels_metrics_comprehensive_v2.md §5.3"
+    provenance: "sec_filing"
+    confidence: "high"
+    note: "-1% QoQ."
+  eu_million:
+    value: 98
+    source: "reels_metrics_comprehensive_v2.md §5.3"
+    provenance: "sec_filing"
+    confidence: "high"
+    note: "-1% QoQ."
+  row_million:
+    value: 282
+    source: "reels_metrics_comprehensive_v2.md §5.3"
+    provenance: "sec_filing"
+    confidence: "high"
+    note: "+11% YoY."
+
+row_dau_yoy_pct:
+  value: 11
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "sec_filing"
+  confidence: "high"
+
+# ---------------------------------------------------------------------------
+# Spotlight-specific — flag:not_disclosed
+# ---------------------------------------------------------------------------
+
+spotlight_mau:
+  value: null
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "flag:not_disclosed. Snap does not publish Spotlight-specific MAU. Qualitative cues only: US Snapchatters posting to Spotlight +47% YoY; reposts/shares +69% YoY."
+
+spotlight_share_of_content_time:
+  value: null
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "flag:not_disclosed. Snap does not publish Spotlight share of content time."
+
+# ---------------------------------------------------------------------------
+# Time / impression growth (§5.3)
+# ---------------------------------------------------------------------------
+
+global_impressions_yoy_pct_q4:
+  value: 14
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "sec_filing"
+  confidence: "high"
+
+ecpm_yoy_pct_q4:
+  value: -8
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Snap eCPMs declined 8% YoY in Q4 2025."
+
+# ---------------------------------------------------------------------------
+# Q1 2026 guidance (§5.3)
+# ---------------------------------------------------------------------------
+
+q1_2026_revenue_guidance_usd_billion:
+  low:
+    value: 1.50
+    source: "reels_metrics_comprehensive_v2.md §5.3"
+    provenance: "earnings"
+    confidence: "high"
+  high:
+    value: 1.53
+    source: "reels_metrics_comprehensive_v2.md §5.3"
+    provenance: "earnings"
+    confidence: "high"
+
+q1_2026_adj_ebitda_guidance_usd_million:
+  low:
+    value: 170
+    source: "reels_metrics_comprehensive_v2.md §5.3"
+    provenance: "earnings"
+    confidence: "high"
+  high:
+    value: 190
+    source: "reels_metrics_comprehensive_v2.md §5.3"
+    provenance: "earnings"
+    confidence: "high"
+
+# ---------------------------------------------------------------------------
+# Spotlight Rewards lifecycle (§5.3)
+# ---------------------------------------------------------------------------
+
+spotlight_rewards_status:
+  value: "ended_2025-01-31"
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Snap newsroom / Snap help: Spotlight Rewards ended Jan 31 2025."
+
+spotlight_rewards_replacement:
+  value: "Snap Monetization Program from 2025-02-01"
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Replaced Spotlight Rewards. Industry precedent for test_05_creator_bonus_pause directional analogy."
+
+spotlight_view_time_min_hours_2026_05_07:
+  value: 100
+  source: "reels_metrics_comprehensive_v2.md §5.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "May 7 2026 update: minimum 100 hr Spotlight View Time for max rewards."

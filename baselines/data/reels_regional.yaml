@@ -1,0 +1,62 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    Regional Instagram user counts from §3.4 of
+    reels_metrics_comprehensive_v2.md.  DataReportal April 2026 is the
+    primary baseline (mirrors baselines/data/instagram_platform.yaml
+    top_regions).  The Backlinko / Sprout Social India figure is
+    additionally recorded here as an alternative for sensitivity
+    testing — methodology variance is documented in §3.4.
+
+# ---------------------------------------------------------------------------
+# India — primary + alternative
+# ---------------------------------------------------------------------------
+
+india_users_million_datareportal:
+  value: 392
+  source: "reels_metrics_comprehensive_v2.md §3.4"
+  provenance: "industry"
+  confidence: "medium"
+  note: "DataReportal April 2026, sourced from Meta ad-tools API. Primary baseline per §3.4."
+
+india_users_million_alternative:
+  value: 472
+  source: "reels_metrics_comprehensive_v2.md §3.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Backlinko / Sprout Social citation; methodology variance with DataReportal primary. §3.4 notes alternative aggregators cite 472-480M; lower bound recorded here."
+
+# ---------------------------------------------------------------------------
+# Other top regions (DataReportal April 2026)
+# ---------------------------------------------------------------------------
+
+us_users_million:
+  value: 172
+  source: "reels_metrics_comprehensive_v2.md §3.4"
+  provenance: "industry"
+  confidence: "medium"
+  note: "DataReportal April 2026."
+
+brazil_users_million:
+  value: 141
+  source: "reels_metrics_comprehensive_v2.md §3.4"
+  provenance: "industry"
+  confidence: "medium"
+  note: "DataReportal April 2026."
+
+indonesia_users_million_low:
+  value: 100
+  source: "reels_metrics_comprehensive_v2.md §3.4"
+  provenance: "industry"
+  confidence: "medium"
+  note: "DataReportal April 2026; range bottom (100-109M)."
+
+indonesia_users_million_high:
+  value: 109
+  source: "reels_metrics_comprehensive_v2.md §3.4"
+  provenance: "industry"
+  confidence: "medium"
+  note: "DataReportal April 2026; range top."

@@ -1,0 +1,126 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    View-definition asymmetry baseline from §6 of
+    reels_metrics_comprehensive_v2.md.  THIS FILE IS MANDATORY
+    INJECTION CONTENT — the M18 MCP tool wrapper
+    tools/baseline_tools.py get_competitor_comparison MUST inject
+    mandatory_injection_text verbatim into every competitor-comparison
+    response.  M18's acceptance test asserts this file is present and
+    non-empty and that the warning text appears in every comparison.
+
+# ---------------------------------------------------------------------------
+# Mandatory injection text — verbatim from §6.2
+# Preserve the leading "⚠️" character; preserve line shape.
+# ---------------------------------------------------------------------------
+
+mandatory_injection_text: |
+  ⚠️ View-definition asymmetry: Instagram, Facebook, YouTube Shorts, and TikTok all redefined "view" as "play started, no minimum watch time" between March and April 2025. Cross-period comparisons spanning that boundary are methodologically broken. Aggregate platform totals (e.g., summing daily views across IG/FB/Shorts/TikTok) overstate human attention by an estimated 30–50% due to loop counting, autoplay, and carousel inflation. When comparing platforms, prefer watch-time minutes or engaged views.
+
+# ---------------------------------------------------------------------------
+# Per-platform definitions (§6.1)
+# ---------------------------------------------------------------------------
+
+per_platform_definitions:
+
+  instagram:
+    definition_text: "Views will measure the number of times a reel started to play or replay and the number of times a non-reel appeared on a person's screen."
+    effective_date: "2025-04-21"
+    play_threshold_seconds: 0.1
+    replaces: "Impressions + Plays + Video Views (single Views metric)"
+    self_views_excluded: true
+    key_quotes:
+      - speaker: "Adam Mosseri"
+        quote: "Sends, reach, and views are the most important metrics for anybody trying to understand how their content is doing on Instagram."
+        source_event: "Instagram product communication around the unified Views metric"
+    source: "reels_metrics_comprehensive_v2.md §6.1"
+    provenance: "public_statement"
+    confidence: "high"
+
+  facebook:
+    definition_text: "Aligned with Instagram on the same April 2025 unified Views metric."
+    effective_date: "2025-04-21"
+    pre_change_definition: "3-second video view standard with 50%+ visibility on mobile"
+    key_quotes: []
+    source: "reels_metrics_comprehensive_v2.md §6.1"
+    provenance: "public_statement"
+    confidence: "high"
+
+  youtube_shorts:
+    definition_text: "Views = each time a Short starts to play or replay, with no minimum watch time required."
+    effective_date: "2025-03-31"
+    parallel_metric: "Engaged Views"
+    parallel_metric_definition: "viewers who chose to continue watching past initial impression (specific threshold undisclosed; historically a few seconds)"
+    monetization_denominator: "engaged views, NOT the new total"
+    ypp_eligibility_threshold: "10M engaged Shorts views per 90 days"
+    key_quotes:
+      - speaker: "TeamYouTube"
+        quote: "We recognize that you want a deeper understanding of how your short-form videos are performing holistically, including when you're posting across multiple platforms."
+        source_event: "TeamYouTube announcement around the 2025-03-31 view-definition change"
+    source: "reels_metrics_comprehensive_v2.md §6.1"
+    provenance: "public_statement"
+    confidence: "high"
+
+  youtube_long_form:
+    definition_text: "View = ≥30 seconds watched (or ≥11 seconds if video is <30 seconds); user-initiated; manual review at 301 views."
+    effective_date: "unchanged"
+    key_quotes: []
+    source: "reels_metrics_comprehensive_v2.md §6.1"
+    provenance: "public_statement"
+    confidence: "high"
+
+  tiktok:
+    definition_text: "A view on TikTok is counted as soon as the video starts playing in someone's feed."
+    effective_date: "harmonized April 2025"
+    loop_counting: "each loop counts as a new view (excluding self-views)"
+    ad_definition: "1-sec 50%-visible impressions"
+    focused_view_definition: "≥6 sec or engagement"
+    creator_rewards_qualified_views: "≥5 sec, FYP only, unique viewer"
+    key_quotes: []
+    source: "reels_metrics_comprehensive_v2.md §6.1"
+    provenance: "public_statement"
+    confidence: "high"
+
+# ---------------------------------------------------------------------------
+# Asymmetry reasons (§6.2) — five-item enumeration verbatim
+# ---------------------------------------------------------------------------
+
+asymmetry_reasons:
+  - "Autoplay vs click-to-play (vertical feed swipes generate involuntary plays often <100ms)."
+  - "Loop counting now harmonized post-2025 but not historically."
+  - "IG carousel images can each register as a view, inflating IG totals against video-only platforms."
+  - "Only YouTube retains an 'Engaged Views' parallel metric that approximates the quality-controlled view."
+  - "Monetization denominators differ — YouTube pays on engaged views, TikTok on qualified views, Instagram doesn't pay on views directly."
+
+# ---------------------------------------------------------------------------
+# Aggregate overstatement estimate (§6.2)
+# ---------------------------------------------------------------------------
+
+aggregate_overstatement_estimate_pct_low:
+  value: 30
+  source: "reels_metrics_comprehensive_v2.md §6.2"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "Lower bound of '30-50%+' aggregate-attention overstatement when summing daily views across IG/FB/Shorts/TikTok."
+
+aggregate_overstatement_estimate_pct_high:
+  value: 50
+  source: "reels_metrics_comprehensive_v2.md §6.2"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "Upper bound of '30-50%+' aggregate-attention overstatement; the '+' qualifier in §6.2 implies the upper bound may be higher in practice."
+
+# ---------------------------------------------------------------------------
+# Boundary period — when cross-period comparisons become broken
+# ---------------------------------------------------------------------------
+
+unification_boundary_window:
+  start: "2025-03-01"
+  end: "2025-04-30"
+  source: "reels_metrics_comprehensive_v2.md §6.2"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "All four platforms harmonized 'view' definitions between March and April 2025; cross-period comparisons spanning this window are methodologically broken per §6.2 and §0 item 8."

@@ -1,0 +1,161 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    YouTube Shorts competitor baselines from §5.2 of
+    reels_metrics_comprehensive_v2.md.  CEO Mohan's 200B daily-views
+    figure is public_statement / high but carries a methodology caveat
+    — NOT apples-to-apples with the prior 70B March 2024 figure due to
+    the 2025-03-31 view-definition change (see
+    baselines/data/view_definition_asymmetry.yaml).  Alphabet
+    SEC-filed revenue numbers are sec_filing / high.  YouTube Shorts
+    creator-side RPM ranges are estimate / low.
+
+# ---------------------------------------------------------------------------
+# Daily views (§5.2)
+# ---------------------------------------------------------------------------
+
+daily_views_billion:
+  value: 200
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "CEO Mohan, Cannes Lions June 2025; +186% YoY from 70B March 2024 — but NOT apples-to-apples due to 2025-03-31 view-definition change. See baselines/data/view_definition_asymmetry.yaml. Calibration anchor for test_06_competitor_parity (≥200B band)."
+
+daily_uploads_million:
+  value: 12
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "AWISEE; ~12M daily uploads, 910M+ total library."
+
+avg_session_length_minutes_low:
+  value: 14
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Loopex / Zebracat; range bottom."
+
+avg_session_length_minutes_high:
+  value: 18
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Loopex / Zebracat; range top."
+
+# ---------------------------------------------------------------------------
+# YouTube total ad revenue (Alphabet 8-K / 10-K, §5.2)
+# ---------------------------------------------------------------------------
+
+youtube_total_ad_revenue_2024_usd_billion:
+  value: 36.15
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Alphabet 10-K."
+
+youtube_total_ad_revenue_2025_usd_billion:
+  value: 40.5
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Alphabet 8-K Q4 2025; '$40.5B+' aggregate."
+
+youtube_q4_2025_ad_revenue_usd_billion:
+  value: 11.38
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Alphabet 8-K Q4 2025; +8.7% YoY."
+
+youtube_q3_2025_ad_revenue_usd_billion:
+  value: 10.26
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "+15% YoY."
+
+# ---------------------------------------------------------------------------
+# YouTube total revenue (ads + subs) — Pichai first-time disclosure 2026-02-04
+# ---------------------------------------------------------------------------
+
+youtube_total_revenue_2025_usd_billion:
+  value: 60
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "earnings"
+  confidence: "high"
+  note: "First-time disclosure; Pichai 2026-02-04. ads + subscriptions; '>$60B'."
+
+youtube_paid_subscriptions_million_2025:
+  value: 325
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Pichai 2026-02-04: 325M+ paid subscriptions."
+
+# ---------------------------------------------------------------------------
+# Shorts RPM (§5.2)
+# ---------------------------------------------------------------------------
+
+shorts_rpm_usd_low:
+  value: 0.01
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Influencer Marketing Hub / Mediacube; most $0.04-$0.06."
+
+shorts_rpm_usd_high:
+  value: 0.30
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Influencer Marketing Hub / Mediacube."
+
+shorts_rpm_us_avg_usd:
+  value: 0.30
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "US average."
+
+# ---------------------------------------------------------------------------
+# Shorts revshare (§5.2) — public_statement / high
+# ---------------------------------------------------------------------------
+
+shorts_creator_revshare_pct:
+  value: 45
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "YouTube Help: 45% to creator / 55% YouTube (covers music licensing); active since 2023-02-01."
+
+# ---------------------------------------------------------------------------
+# US TV viewing share (§5.2) — Nielsen Gauge / industry / high
+# ---------------------------------------------------------------------------
+
+youtube_us_tv_viewing_share_pct_jan_2026:
+  value: 12.5
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "industry"
+  confidence: "high"
+  note: "Nielsen Gauge via MediaPost; #1 for 11th consecutive month, up from 10.8% Jan 2025."
+
+youtube_us_tv_viewing_share_pct_feb_2026:
+  value: 12.7
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "industry"
+  confidence: "high"
+  note: "Nielsen Gauge via Deadline; #2 due to Super Bowl + Winter Olympics."
+
+# ---------------------------------------------------------------------------
+# Shorts engagement (§5.2)
+# ---------------------------------------------------------------------------
+
+shorts_engagement_rate_pct:
+  value: 5.91
+  source: "reels_metrics_comprehensive_v2.md §5.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Loopex; watch rate 2.52%; comment rate 0.05%; retention 73%."

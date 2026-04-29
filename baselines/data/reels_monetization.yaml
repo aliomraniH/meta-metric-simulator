@@ -1,0 +1,140 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    Reels monetization baselines from §4.2 (CPM tiers) and §4.3
+    (creator economics) of reels_metrics_comprehensive_v2.md.  CPM
+    figures are Adamigo 2026 industry estimates; creator RPM ranges
+    are Rowfix industry data.  The 55% in-stream creator revshare is
+    widely cited but not Meta-documented per §13.  The FY 2025 FB
+    creator payout numbers come from Meta's March 18 2026 announcement
+    and carry public_statement / high.
+
+# ---------------------------------------------------------------------------
+# Advertiser CPM by tier (§4.2)
+# ---------------------------------------------------------------------------
+
+reels_cpm_tier1_usd_low:
+  value: 10
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Adamigo 2026: Tier-1 (US/UK/AU) Reels CPM range bottom."
+
+reels_cpm_tier1_usd_high:
+  value: 23
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Adamigo 2026: Tier-1 range top; finance/SaaS niche $20+."
+
+reels_cpm_tier2_usd_low:
+  value: 1
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Adamigo 2026: Tier-2 (LatAm/India/SEA) Reels CPM range bottom."
+
+reels_cpm_tier2_usd_high:
+  value: 5
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Adamigo 2026: Tier-2 range top."
+
+# ---------------------------------------------------------------------------
+# In-stream creator revshare (§4.3)
+# ---------------------------------------------------------------------------
+
+in_stream_creator_revshare_pct:
+  value: 55
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Widely cited industry; not formally documented by Meta as a fixed % per §13. 55% creator / 45% Meta on legacy in-stream ads."
+
+# ---------------------------------------------------------------------------
+# Creator RPM ranges (§4.3)
+# ---------------------------------------------------------------------------
+
+reels_creator_rpm_bonuses_usd_low:
+  value: 0.01
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Buffer / Flowgent / Zeely: IG Reels creator RPM (Bonuses tier) range bottom; per 1K views."
+
+reels_creator_rpm_bonuses_usd_high:
+  value: 0.05
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Buffer / Flowgent / Zeely: range top; per 1K views."
+
+fb_reels_creator_rpm_cmp_usd_low:
+  value: 0.02
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "industry"
+  confidence: "low"
+  note: "Rowfix: FB Reels creator RPM (CMP, post-Aug 2025) baseline range bottom."
+
+fb_reels_creator_rpm_cmp_usd_high:
+  value: 0.50
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "industry"
+  confidence: "low"
+  note: "Rowfix: baseline range top."
+
+fb_reels_creator_rpm_finance_niche_usd:
+  value: 0.90
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "industry"
+  confidence: "low"
+  note: "Rowfix: finance niche RPM up to $0.90 per 1K views."
+
+# ---------------------------------------------------------------------------
+# FY 2025 FB creator payouts (§4.3) — Meta March 18 2026 announcement
+# ---------------------------------------------------------------------------
+
+fy_2025_fb_creator_payouts_usd_billion:
+  value: 3.0
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Meta announcement via CNBC 2026-03-18: ~$3B in 2025 FB creator payouts; +35% YoY."
+
+fy_2025_fb_creator_payouts_yoy_pct:
+  value: 35
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Meta announcement via CNBC 2026-03-18."
+
+fy_2025_fb_creator_payouts_share_to_reels_pct:
+  value: 60
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Meta announcement via CNBC 2026-03-18: ~60% of the FY 2025 FB creator payouts went to Reels content."
+
+creators_earning_over_10k_yoy_pct:
+  value: 30
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Meta CNBC 2026-03-18: creators earning >$10K/yr on FB +30% YoY in 2025."
+
+# ---------------------------------------------------------------------------
+# Reels run rate — anchor (§4.2 / §0 item 3)
+# Note: full Zuck verbatim quote and snapshot anchor live in
+# baselines/data/reels_product.yaml.  Cross-reference here only.
+# ---------------------------------------------------------------------------
+
+run_rate_usd_billion_cross_ref:
+  value: 50
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Cross-reference to baselines/data/reels_product.yaml run_rate_usd_billion. Anchor through 2026-04-28 per §0 item 3; do NOT update from Q1 2026 earnings until v2.1 refresh."
