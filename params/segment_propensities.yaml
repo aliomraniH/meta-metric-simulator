@@ -1,0 +1,258 @@
+_meta:
+  owner: "algorithm_authors"
+  refresh_cadence_days: 30
+  last_updated: "2026-04-28"
+  layer: 3
+  description: |
+    Five viewer segments consumed by algorithms/engagement_response.py and
+    algorithms/segment_cascades.py.  Per §9 of the reference doc and §0
+    item 10, no public source segments Reels viewers along these axes.
+    All five segments are MODELED, not measured.  Population shares,
+    skip thresholds, and engagement-action multipliers are synthesized
+    seed defaults.  Teen-anchored values from §9.4 (Pew Dec 2025) carry
+    industry / medium provenance; teen integrity guardrail multipliers
+    from §9.5 (Meta Family Center) carry public_statement / high.
+
+# ---------------------------------------------------------------------------
+# Segments
+# ---------------------------------------------------------------------------
+
+segments:
+
+  snackers:
+    population_share_pct:
+      value: 35
+      source: "reels_metrics_comprehensive_v2.md §9.1"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Modeled from 'average user 33 min/day' cohort with low session length (§3.2)."
+    skip_threshold_sec:
+      value: 1.5
+      source: "reels_metrics_comprehensive_v2.md §9.2"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Highest-impatience cohort; below industry 50% drop-off mark (§4.4)."
+    like_propensity:
+      value: 0.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Multiplier vs platform avg (baseline=1.0)."
+    send_propensity:
+      value: 0.3
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Multiplier vs platform avg."
+    save_propensity:
+      value: 0.2
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Multiplier vs platform avg."
+    comment_propensity:
+      value: 0.3
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Multiplier vs platform avg."
+    replay_propensity:
+      value: 0.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Multiplier vs platform avg."
+
+  deep_watchers:
+    population_share_pct:
+      value: 15
+      source: "reels_metrics_comprehensive_v2.md §9.1"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Modeled from 'Gen Z 53 min/day' power-user cohort (§3.2)."
+    skip_threshold_sec:
+      value: 8
+      source: "reels_metrics_comprehensive_v2.md §9.2"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Watches longer-form Reels and finishes them."
+    like_propensity:
+      value: 1.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    send_propensity:
+      value: 1.0
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    save_propensity:
+      value: 1.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    comment_propensity:
+      value: 1.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    replay_propensity:
+      value: 2.0
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+
+  social_sharers:
+    population_share_pct:
+      value: 20
+      source: "reels_metrics_comprehensive_v2.md §9.1"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Modeled from '1B daily DM sends / 2B DAU' implied share-active cohort (§4.4)."
+    skip_threshold_sec:
+      value: 3
+      source: "reels_metrics_comprehensive_v2.md §9.2"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Skips faster than deep_watchers; shares more than they watch."
+    like_propensity:
+      value: 1.0
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    send_propensity:
+      value: 3.0
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Defining behaviour of the segment — 3× platform avg send rate."
+    save_propensity:
+      value: 0.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    comment_propensity:
+      value: 1.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    replay_propensity:
+      value: 0.8
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+
+  shoppers:
+    population_share_pct:
+      value: 10
+      source: "reels_metrics_comprehensive_v2.md §9.1"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Modeled from Instagram Shop adoption + affiliate-link rollout markets (§7.5 Reels native affiliate links)."
+    skip_threshold_sec:
+      value: 4
+      source: "reels_metrics_comprehensive_v2.md §9.2"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Pauses for product evaluation."
+    like_propensity:
+      value: 0.8
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    send_propensity:
+      value: 0.6
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    save_propensity:
+      value: 3.0
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Defining behaviour — 3× platform avg save rate (saves for later purchase)."
+    comment_propensity:
+      value: 0.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    replay_propensity:
+      value: 1.0
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+
+  teens:
+    population_share_pct:
+      value: 20
+      source: "reels_metrics_comprehensive_v2.md §9.1"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "Modeled as ~20% of daily-active base globally; informed by Pew anchor that 55% of US teens use IG daily."
+    skip_threshold_sec:
+      value: 2
+      source: "reels_metrics_comprehensive_v2.md §9.2"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "High volume / low patience; closer to snackers than deep_watchers."
+    like_propensity:
+      value: 1.2
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    send_propensity:
+      value: 2.5
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+      note: "High DM-to-watch ratio characteristic of teen segment."
+    save_propensity:
+      value: 0.7
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    comment_propensity:
+      value: 1.8
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+    replay_propensity:
+      value: 1.3
+      source: "reels_metrics_comprehensive_v2.md §9.3"
+      provenance: "synthesized_2026-04-28"
+      confidence: "low"
+
+    # ---- Teen-specific anchors (§9.4) ---------------------------------------
+    daily_use_pct:
+      value: 55
+      source: "reels_metrics_comprehensive_v2.md §9.4"
+      provenance: "industry"
+      confidence: "medium"
+      note: "Pew Dec 9 2025: 55% of US teens use IG daily."
+    almost_constantly_use_pct:
+      value: 12
+      source: "reels_metrics_comprehensive_v2.md §9.4"
+      provenance: "industry"
+      confidence: "medium"
+      note: "Pew Dec 9 2025: 12% of US teens use IG 'almost constantly' (up from 8% in 2023)."
+
+    # ---- Teen integrity guardrail multipliers (§9.5) ------------------------
+    integrity_guardrail_multiplier:
+      content_filtering:
+        value: 2.0
+        source: "reels_metrics_comprehensive_v2.md §9.5"
+        provenance: "public_statement"
+        confidence: "high"
+        note: "Meta Family Center / Meta newsroom April 2026: teens see 2× content filtering vs platform default."
+      ad_load_reduction:
+        value: 0.8
+        source: "reels_metrics_comprehensive_v2.md §9.5"
+        provenance: "public_statement"
+        confidence: "high"
+        note: "Meta Family Center: teen ad load reduced to 0.8× platform default."
+      recommendation_rabbit_hole_damping:
+        value: 1.5
+        source: "reels_metrics_comprehensive_v2.md §9.5"
+        provenance: "public_statement"
+        confidence: "high"
+        note: "Meta Family Center: 1.5× damping on rabbit-hole effects in teen recommendations."

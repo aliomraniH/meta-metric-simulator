@@ -1,0 +1,87 @@
+_meta:
+  owner: "algorithm_authors"
+  refresh_cadence_days: 30
+  last_updated: "2026-04-28"
+  layer: 3
+  description: |
+    Ranking signal weights consumed by algorithms/ranking.py.  Three of the
+    weights — alpha_watch_time, beta_like_rate_connected, and
+    gamma_send_rate_unconnected — anchor on Mosseri's verbatim Jan 22 2025
+    statement (the "top three signals" quote in §10 of the reference doc)
+    and carry public_statement / high provenance.  Everything else is a
+    synthesized seed default and is calibration-tuned in M11.
+
+# ---------------------------------------------------------------------------
+# Mosseri-anchored weights (§10.1; Mosseri Jan 22 2025 verbatim)
+# ---------------------------------------------------------------------------
+
+alpha_watch_time:
+  value: 0.40
+  source: "reels_metrics_comprehensive_v2.md §10.1"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Mosseri Jan 22 2025: 'The top three signals that matter most for ranking are watch time, likes and sends.' watch_time is the #1 signal."
+
+beta_like_rate_connected:
+  value: 0.20
+  source: "reels_metrics_comprehensive_v2.md §10.1"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Mosseri Jan 22 2025: 'Likes are slightly more important for connected content.' Weighted lower than watch_time and send_rate per Mosseri's framing."
+
+gamma_send_rate_unconnected:
+  value: 0.30
+  source: "reels_metrics_comprehensive_v2.md §10.1"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Mosseri Jan 22 2025: 'Sends are slightly more important for unconnected content.' Sends weighted ~3-5× likes per §4.4 send-to-like derivation."
+
+# ---------------------------------------------------------------------------
+# Synthesized seed weights — calibration-tuned in M11
+# ---------------------------------------------------------------------------
+
+delta_skip_penalty_3s:
+  value: -0.25
+  source: "reels_metrics_comprehensive_v2.md §10.1"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Aug 2025 Skip Rate metric (§4.5) suggests skip is a real ranking input; magnitude synthesized. No Meta-published target."
+
+epsilon_quality_bonus:
+  value: 0.10
+  source: "reels_metrics_comprehensive_v2.md §10.1"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Originality Score (§10.3, Dec 2025): original creators saw +40-60% reach; aggregator accounts -60-80%. Magnitude synthesized."
+
+zeta_repetition_penalty:
+  value: -0.30
+  source: "reels_metrics_comprehensive_v2.md §10.1"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "§10.3: aggregator accounts saw 60-80% reach drops in Dec 2025 update. Magnitude calibrated to match the observed reach delta."
+
+exploration_sigma:
+  value: 0.05
+  source: "reels_metrics_comprehensive_v2.md §10.1"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Tie-breaker / exploration jitter on top of weighted score. Not present in any Meta disclosure; M11 calibration tunes."
+
+# ---------------------------------------------------------------------------
+# Pool mix (§10.2)
+# ---------------------------------------------------------------------------
+
+connected_vs_unconnected_pool_mix:
+  connected_share_pct:
+    value: 35
+    source: "reels_metrics_comprehensive_v2.md §10.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Prior simulator estimate; Mosseri does not quote a number. Alternative scenario 30/70 in §10.2 (industry sites cite '60%+ of Reels views from non-followers'). M11 should bracket sensitivity by running both 35/65 and 30/70."
+  unconnected_share_pct:
+    value: 65
+    source: "reels_metrics_comprehensive_v2.md §10.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Complement of connected_share_pct. Alternative scenario 70 in §10.2."

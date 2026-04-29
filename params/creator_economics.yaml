@@ -1,0 +1,150 @@
+_meta:
+  owner: "algorithm_authors"
+  refresh_cadence_days: 30
+  last_updated: "2026-04-28"
+  layer: 3
+  description: |
+    Creator economics consumed by algorithms/creator_response.py.  The
+    earnings-to-posting elasticity, posting lag, and tier multipliers are
+    synthesized seeds; calibration test_05 in M11 tunes them against the
+    Reels Play Bonus pause precedent and analogous patterns (Snap
+    Spotlight Rewards end Jan 31 2025; YouTube Shorts Fund end).  The
+    HypeAuditor 2025 tier distribution carries industry / medium
+    provenance.  The Gini coefficient is flag:not_disclosed (§4.8) and
+    uses a synthesized 0.90 default within the industry-implied
+    0.85-0.95 range.
+
+# ---------------------------------------------------------------------------
+# Elasticity + lag (calibration test_05 tunes)
+# ---------------------------------------------------------------------------
+
+earnings_to_posting_elasticity:
+  value: 0.5
+  source: "reels_metrics_comprehensive_v2.md §11.5"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Synthesized seed. M11 test_05 tunes against expected micro-creator posting frequency Δ ∈ [-30%, -15%] under a 90-day mid-tier earnings drop. Reels Play Bonus pause is the directional precedent (no Meta-disclosed magnitude)."
+
+posting_lag_days:
+  value: 7
+  source: "reels_metrics_comprehensive_v2.md §11.5"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Default 7-day lag between earnings signal and posting-rate response. Implementation in algorithms/creator_response.py uses a FIFO earnings_history of length lag_days + 1."
+
+smoothing:
+  value: 0.5
+  source: "reels_metrics_comprehensive_v2.md §11.5"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Blend factor between current and target posting rate so a single thin tick doesn't collapse supply to zero (per the §4.3 / §11.5 expected band)."
+
+posting_floor_per_day:
+  value: 0.05
+  source: "reels_metrics_comprehensive_v2.md §11.5"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Lower bound on per-creator posting rate; clamped by creator_response.update_supply."
+
+posting_ceiling_per_day:
+  value: 5.0
+  source: "reels_metrics_comprehensive_v2.md §11.5"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Upper bound; calibration test_05 should not push average posting rate above this."
+
+# ---------------------------------------------------------------------------
+# Tier multipliers (calibration target — micro vs macro asymmetry)
+# ---------------------------------------------------------------------------
+
+tier_multipliers:
+  nano:
+    value: 1.0
+    source: "reels_metrics_comprehensive_v2.md §4.8, §11.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Reference tier — multiplier applied to elasticity for nano (1K-10K) creators."
+  micro:
+    value: 1.2
+    source: "reels_metrics_comprehensive_v2.md §4.8, §11.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Micro (10K-50K, sometimes -100K) — slightly more responsive than nano. The micro-vs-macro asymmetry is the test_05 calibration target."
+  mid:
+    value: 0.9
+    source: "reels_metrics_comprehensive_v2.md §4.8, §11.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Mid-tier (50K-500K) — slightly less responsive than nano (more brand contracts buffering monetization volatility)."
+  macro:
+    value: 0.7
+    source: "reels_metrics_comprehensive_v2.md §4.8, §11.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Macro — less elastic; brand deals and other revenue streams dampen platform-earnings response."
+  mega:
+    value: 0.4
+    source: "reels_metrics_comprehensive_v2.md §4.8, §11.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Mega/Celebrity (1M+) — least elastic; platform earnings are a small share of total income."
+
+# ---------------------------------------------------------------------------
+# Tier distribution (HypeAuditor State of Influencer Marketing 2025)
+# ---------------------------------------------------------------------------
+
+tier_distribution_pct:
+  nano:
+    value: 75.9
+    source: "reels_metrics_comprehensive_v2.md §4.8"
+    provenance: "industry"
+    confidence: "medium"
+    note: "HypeAuditor State of Influencer Marketing 2025: Nano (1K-10K) share grew from 65.4% (2023) to 75.9% (2024-25). Tiers as defined by HypeAuditor are overlapping per their methodology."
+  micro:
+    value: 27.7
+    source: "reels_metrics_comprehensive_v2.md §4.8"
+    provenance: "industry"
+    confidence: "medium"
+    note: "HypeAuditor 2025: Micro (10K-50K, sometimes -100K) ~27.7% trending toward ~33%. Per-source overlapping tiers; do not expect distribution to sum to 100%."
+  mid:
+    value: 6.4
+    source: "reels_metrics_comprehensive_v2.md §4.8"
+    provenance: "industry"
+    confidence: "medium"
+    note: "HypeAuditor 2025: Mid-tier (50K-500K) 6.4%."
+  macro_mega:
+    value: 0.23
+    source: "reels_metrics_comprehensive_v2.md §4.8"
+    provenance: "industry"
+    confidence: "medium"
+    note: "HypeAuditor 2025: Mega/Celebrity (1M+) 0.23%. Combined with macro tail in this single bucket per HypeAuditor's reporting cuts."
+
+# ---------------------------------------------------------------------------
+# Gini coefficient (flag:not_disclosed per §4.8)
+# ---------------------------------------------------------------------------
+
+gini_coefficient:
+  value: 0.90
+  source: "reels_metrics_comprehensive_v2.md §4.8"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Industry-implied 0.85-0.95; Meta does not disclose. Default 0.90 chosen as midpoint. Flag:not_disclosed in §4.8."
+
+# ---------------------------------------------------------------------------
+# Anchored payout magnitudes — used by the engine to seed baseline_earnings
+# on creator_state init (§4.3, Meta March 18 2026 announcement).
+# ---------------------------------------------------------------------------
+
+fb_creator_payouts_2025_usd_billion:
+  value: 3.0
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Meta CNBC announcement March 18 2026: 2025 FB creator payouts ~$3B (+35% YoY); ~60% to Reels content."
+
+fb_creator_payouts_reels_share_pct:
+  value: 60
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Same source: ~60% of the $3B FY2025 FB creator payouts went to Reels content."

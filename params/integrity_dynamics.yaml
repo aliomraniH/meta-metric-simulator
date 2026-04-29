@@ -1,0 +1,88 @@
+_meta:
+  owner: "algorithm_authors"
+  refresh_cadence_days: 30
+  last_updated: "2026-04-28"
+  layer: 3
+  description: |
+    Integrity dynamics consumed by algorithms/integrity_dynamics.py.  Per
+    §4.6 / §4.7 of the reference doc, Meta does not publish per-product
+    proactive detection rates and never published a peak prevalence
+    number for the Feb 26 2025 incident.  All values here are synthesized
+    seeds; calibration test_03 in M11 tunes the decay constant against
+    the qualitative shape of the incident (spike → guardrail fires →
+    freeze-in-horror watch-time spike → recovery within 14 days), without
+    using any specific peak number.
+
+# ---------------------------------------------------------------------------
+# Organic decay (calibration test_03 tunes)
+# ---------------------------------------------------------------------------
+
+organic_decay_per_day:
+  value: 0.05
+  source: "reels_metrics_comprehensive_v2.md §4.6, §11.3"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "5% per-day decay so a 5× spike returns to within ~10% of baseline in ~14 days, matching the §11.3 trust-recovery window. M11 test_03 tunes."
+
+# ---------------------------------------------------------------------------
+# Detection rate (Meta does not publish per-product)
+# ---------------------------------------------------------------------------
+
+detection_rate_pct:
+  value: 95
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Meta does not publicly disclose; modeled estimate. Industry-implied 90-99% range across mature integrity systems. Used by integrity_dynamics.evolve as the steady-state target detection_rate drifts toward."
+
+detection_growth_per_day:
+  value: 0.01
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Per-day drift of detection_rate toward 1.0; chosen so a baseline 0.95 detection rate stays effectively constant absent a perturbation."
+
+# ---------------------------------------------------------------------------
+# Repeat-offender amplification
+# ---------------------------------------------------------------------------
+
+repeat_offender_factor:
+  value: 1.5
+  source: "reels_metrics_comprehensive_v2.md §4.7"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "CBS News April 2025 follow-up identified 600+ accounts pushing graphic violence still active post-incident with $1K+/day economics. Multiplier applied to baseline injection rate when a repeat-offender cluster is active."
+
+# ---------------------------------------------------------------------------
+# Feb 26 2025 incident replay factor (test_03)
+# ---------------------------------------------------------------------------
+# Note: the build-prompt parameter name was 'feb_2026_incident_replay_factor'
+# but the reference doc §4.7 dates the incident as Feb 26 2025 — per the
+# REFERENCE_DOC_INDEX.md conflict-resolution rule (reference doc wins),
+# the canonical name is feb_2025_incident_replay_factor.
+# ---------------------------------------------------------------------------
+
+feb_2025_incident_replay_factor:
+  value: 5.0
+  source: "reels_metrics_comprehensive_v2.md §4.7, §11.3"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Spike multiplier applied to baseline violating prevalence for the test_03 scenario. §11.3 setup says '5× baseline for 48 hours, then restore'. NO specific peak prevalence number per §0 item 9 — Meta never published one. The 5× is a multiplier-of-baseline, not a peak prevalence."
+
+# ---------------------------------------------------------------------------
+# Bounds (passed to integrity_dynamics.evolve as floor / ceiling)
+# ---------------------------------------------------------------------------
+
+floor:
+  value: 0.0
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Prevalence cannot go negative; floor of zero."
+
+ceiling:
+  value: 1.0
+  source: "reels_metrics_comprehensive_v2.md §4.6"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Prevalence is a fraction; ceiling of 1.0."

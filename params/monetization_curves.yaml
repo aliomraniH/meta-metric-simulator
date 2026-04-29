@@ -1,0 +1,101 @@
+_meta:
+  owner: "algorithm_authors"
+  refresh_cadence_days: 30
+  last_updated: "2026-04-28"
+  layer: 3
+  description: |
+    Monetization parameters consumed by algorithms/monetization.py.  eCPM
+    distribution is derived from §4.2 of the reference doc (Reels Tier-1
+    $10-23, Tier-2 $1-5, Meta blended $6.59).  The Reels-vs-Feed
+    efficiency ratio is flag:not_disclosed per §4.2.  The 55% in-stream
+    creator revshare is widely cited but not Meta-documented (§4.3).
+    ad_load_to_skip_elasticity and conversion_lift_propagation are
+    synthesized seeds tuned by calibration test_02 and test_04 in M11.
+
+# ---------------------------------------------------------------------------
+# Skip-rate response to ad load (calibration test_02 tunes)
+# ---------------------------------------------------------------------------
+
+ad_load_to_skip_elasticity:
+  value: 0.40
+  source: "reels_metrics_comprehensive_v2.md §11.2"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Synthesized seed; calibration test_02 tunes against Sensor Tower 35→53% ad-share ramp with expected skip-rate Δ ∈ [+12%, +20%]. Meta does not publish this elasticity."
+
+# ---------------------------------------------------------------------------
+# eCPM distribution — sampled by monetization.maybe_ad
+# Derived from §4.2: Reels Tier-1 $10-$23 (US/UK/AU; finance/SaaS $20+),
+# Reels Tier-2 $1-$5 (LatAm/India/SEA), Meta blended $6.59 (Oct 2025).
+# ---------------------------------------------------------------------------
+
+ecpm_distribution:
+  mean:
+    value: 8.0
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Volume-weighted blend of Tier-1 (~$16 mid) and Tier-2 (~$3 mid) anchored at Meta blended $6.59. Meta does not publish a Reels-specific eCPM distribution."
+  sd:
+    value: 4.0
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Spread chosen so 95% of samples fall within Tier-1 / Tier-2 envelope before clamping."
+  floor:
+    value: 0.5
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Floor below Tier-2 lower bound ($1) to admit a thin long tail of low-monetization geos."
+  ceiling:
+    value: 25.0
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Above Tier-1 upper bound ($23) to admit finance/SaaS premium ($20+ per Adamigo 2026)."
+
+# ---------------------------------------------------------------------------
+# Reels-vs-Feed efficiency (§4.2 — flag:not_disclosed)
+# ---------------------------------------------------------------------------
+
+reels_vs_feed_efficiency_ratio:
+  value: 0.90
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Meta does not publicly disclose; modeled estimate. eMarketer Jan 2026 / Tinuiti commentary suggests 0.85-0.95 range with the gap narrowing. Calibration test_01 in M11 tunes within this band."
+  range_low:
+    value: 0.85
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Lower bound of eMarketer Jan 2026 commentary range."
+  range_high:
+    value: 0.95
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Upper bound of eMarketer Jan 2026 commentary range."
+
+# ---------------------------------------------------------------------------
+# In-stream creator revenue share (§4.3)
+# ---------------------------------------------------------------------------
+
+in_stream_creator_revshare_pct:
+  value: 55
+  source: "reels_metrics_comprehensive_v2.md §4.3"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Meta does not publicly disclose; modeled estimate. Widely cited in industry as 55% creator / 45% Meta on legacy in-stream ads but no Meta primary documentation found per §13."
+
+# ---------------------------------------------------------------------------
+# GEM/Lattice conversion lift propagation (calibration test_04 tunes)
+# ---------------------------------------------------------------------------
+
+conversion_lift_propagation:
+  value: 1.0
+  source: "reels_metrics_comprehensive_v2.md §11.4"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Default propagation multiplier of 1.0 — calibration test_04 applies a +3% conversion lift step (Susan Li Q4 2025: 'GEM-on-Facebook-Reels rollout lifted Reels conversions ~3%') and expects conversion Δ ∈ [+2.5%, +3.5%], ROAS Δ ∈ [+2%, +5%]. M11 tunes."

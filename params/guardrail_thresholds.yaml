@@ -1,0 +1,146 @@
+_meta:
+  owner: "algorithm_authors"
+  refresh_cadence_days: 30
+  last_updated: "2026-04-28"
+  layer: 3
+  description: |
+    Circuit-breaker thresholds consumed by algorithms/guardrails.py.  Four
+    required guardrails (integrity_prevalence, teen_exposure,
+    creator_supply_collapse, ad_load_ceiling), each with three severity
+    tiers (warn / breaker / halt) and a direction (above for ceilings,
+    below for floors).  The IG / FB violating prevalence baselines that
+    anchor the integrity ceiling are public_statement / high (Meta
+    Transparency Center H1 2026, §4.6).  All threshold values themselves
+    are synthesized seeds; M11 calibration test_03 tunes the integrity
+    ceiling against the Feb 26 2025 incident framing (no specific peak
+    number per §0 item 9).
+
+# ---------------------------------------------------------------------------
+# Integrity prevalence ceiling (§4.6, §0 item 9)
+# ---------------------------------------------------------------------------
+
+integrity_prevalence:
+  direction: "above"
+  warn:
+    value: 0.0030
+    source: "reels_metrics_comprehensive_v2.md §4.6"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "~2× FB baseline (0.15-0.16% violent & graphic). Soft-tier alert before distribution-tightening kicks in."
+  breaker:
+    value: 0.0050
+    source: "reels_metrics_comprehensive_v2.md §4.6"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "~3× FB baseline. Triggers distribution tightening per §4.7 incident playbook."
+  halt:
+    value: 0.0080
+    source: "reels_metrics_comprehensive_v2.md §4.6"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "~5× FB baseline. Hard stop until human review. M11 test_03 expects this fires within 24h of the spike injection."
+
+  # Anchored baselines from Meta Transparency Center H1 2026 (§4.6).
+  # These inform threshold authoring but are not themselves thresholds.
+  baseline_fb_violent_graphic_pct:
+    value: 0.155
+    source: "reels_metrics_comprehensive_v2.md §4.6"
+    provenance: "public_statement"
+    confidence: "high"
+    note: "Meta Transparency Center H1 2026: FB violent & graphic prevalence 0.15-0.16% (down from 0.19-0.20%). Midpoint shown."
+  baseline_ig_adult_nudity_pct:
+    value: 0.10
+    source: "reels_metrics_comprehensive_v2.md §4.6"
+    provenance: "public_statement"
+    confidence: "high"
+    note: "Meta Transparency Center H1 2026: IG adult nudity prevalence 0.09-0.11% (up from 0.06-0.07%, methodology change). Midpoint shown."
+  enforcement_precision_pct:
+    value: 0.10
+    source: "reels_metrics_comprehensive_v2.md §4.6"
+    provenance: "public_statement"
+    confidence: "high"
+    note: "Meta Transparency Center H1 2026: <0.1% of content removed incorrectly. Used as a sanity check on synthetic guardrail tuning."
+
+# ---------------------------------------------------------------------------
+# Teen exposure ceiling (§4.6, §9.5 — teens see ~50% of platform default
+# integrity exposure thanks to 2× content filtering)
+# ---------------------------------------------------------------------------
+
+teen_exposure:
+  direction: "above"
+  warn:
+    value: 0.0020
+    source: "reels_metrics_comprehensive_v2.md §4.6, §9.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Tighter than platform-wide warn — teen content_filtering multiplier is 2× per §9.5."
+  breaker:
+    value: 0.0030
+    source: "reels_metrics_comprehensive_v2.md §4.6, §9.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Soft cap on teen integrity exposure before distribution tightens further."
+  halt:
+    value: 0.0050
+    source: "reels_metrics_comprehensive_v2.md §4.6, §9.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Hard stop on teen surface; aligns with Meta's stated April 2026 Teen Accounts posture (§7.3)."
+
+# ---------------------------------------------------------------------------
+# Creator supply collapse (90-day rolling drop)
+# ---------------------------------------------------------------------------
+
+creator_supply_collapse:
+  direction: "above"  # observed value = drop pct; "above" warn/breaker/halt = larger drop
+  warn:
+    value: 10.0
+    source: "reels_metrics_comprehensive_v2.md §4.3, §11.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "10% 90-day rolling drop in posting frequency — soft-tier warning. M11 test_05 expects mid-tier creator pause produces -15% to -30% drop."
+  breaker:
+    value: 20.0
+    source: "reels_metrics_comprehensive_v2.md §4.3, §11.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "20% drop — distribution-tightening + bonus-program revisit recommended."
+  halt:
+    value: 30.0
+    source: "reels_metrics_comprehensive_v2.md §4.3, §11.5"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "30% drop — supply-side emergency. Industry precedent: Snap Spotlight Rewards end Jan 31 2025 produced step-function drops on similar order (§5.3)."
+
+# ---------------------------------------------------------------------------
+# Ad-load ceiling (§4.2 — Reels share of IG ads at 53% Q4 2025)
+# ---------------------------------------------------------------------------
+
+ad_load_ceiling:
+  direction: "above"
+  warn:
+    value: 55.0
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Just above the Q4 2025 actual share-of-IG-ads of 53% (§4.2). Soft-tier warning if Reels ad share creeps further."
+  breaker:
+    value: 60.0
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Distribution-tightening threshold; protects against runaway ad-load growth that test_02 in M11 simulates."
+  halt:
+    value: 65.0
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+    note: "Hard stop on additional Reels ad slots; mid-2024 actual was 35% so this represents a near-doubling of ad share."
+
+  # Reference anchor — the Q4 2025 observed share Meta reported.
+  observed_q4_2025_share_pct:
+    value: 53
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "Sensor Tower via CNBC Jan 2026: Reels share of IG ads moved 35% → 53% between Q4 2024 and Q4 2025."
