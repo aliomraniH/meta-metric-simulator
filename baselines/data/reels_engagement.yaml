@@ -1,0 +1,169 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    Reels engagement micro-metrics from §4.4 (industry-aggregator
+    estimates) and §4.5 (Aug 2025 Skip Rate metric).  Per §0 item 10,
+    Meta does NOT publish per-Reels engagement metrics — skip rate,
+    completion rate, send rate, save rate at the platform level are
+    industry estimates only.  Every numeric value in this file
+    therefore carries confidence "low" (or "medium" only for the
+    Mosseri-derived send-to-like weighting).  These values are NOT
+    calibration anchors; they are seed inputs for
+    params/segment_propensities.yaml and reference data for the
+    interview question gen.
+
+# ---------------------------------------------------------------------------
+# Aggregate engagement (§4.4)
+# ---------------------------------------------------------------------------
+
+average_engagement_rate_pct:
+  value: 1.23
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Vidico 2025: (likes + comments) / reach. Declined ~24% YoY. Meta does not publish a Reels-specific platform engagement rate (§0 item 10)."
+
+engagement_yoy_decline_pct:
+  value: 24
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Vidico 2025."
+
+engagement_rate_by_account_size:
+  nano_pct:
+    value: 3.79
+    source: "reels_metrics_comprehensive_v2.md §4.4"
+    provenance: "industry"
+    confidence: "low"
+    note: "Sprout / Social Insider: <5K followers ~3.79%."
+  micro_pct:
+    value: 3.5
+    source: "reels_metrics_comprehensive_v2.md §4.4"
+    provenance: "industry"
+    confidence: "low"
+    note: "Sprout / Social Insider: 10-50K followers 3-4%; midpoint 3.5%."
+  macro_pct:
+    value: 1.75
+    source: "reels_metrics_comprehensive_v2.md §4.4"
+    provenance: "industry"
+    confidence: "low"
+    note: "Sprout / Social Insider: 250K+ followers 1.5-2%; midpoint 1.75%."
+
+# ---------------------------------------------------------------------------
+# First-3-second drop-off (§4.4)
+# ---------------------------------------------------------------------------
+
+first_3_second_dropoff_pct:
+  value: 50
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "TrueFuture / Hootsuite: ~50% of viewers churn in first 3 seconds. Skip threshold seed for params/segment_propensities.yaml."
+
+first_3_second_dropoff_poor_hook_pct:
+  value: 70
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "TrueFuture / Hootsuite: ~70% if hook is poor."
+
+# ---------------------------------------------------------------------------
+# Completion rates (§4.4)
+# ---------------------------------------------------------------------------
+
+completion_rate_captioned_pct:
+  value: 65
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Industry aggregator; captioned vs uncaptioned completion."
+
+completion_rate_uncaptioned_pct:
+  value: 37
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Industry aggregator; captioned vs uncaptioned completion."
+
+completion_rate_under_15s_pct:
+  value: 72
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Zebracat 2025: <15s reels ~72% completion rate."
+
+completion_rate_15_plus_pct:
+  value: 46
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Zebracat 2025: 15s+ reels ~46% completion rate."
+
+# ---------------------------------------------------------------------------
+# Engagement by length (§4.4)
+# ---------------------------------------------------------------------------
+
+engagement_rate_15_30s_pct:
+  value: 4.8
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Zebracat 2025: 15-30s reels engagement rate ~4.8%."
+
+engagement_rate_45s_plus_pct:
+  value: 2.9
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Zebracat 2025: 45s+ reels engagement rate ~2.9%."
+
+# ---------------------------------------------------------------------------
+# Send-to-like weighting (§4.4) — derived from Mosseri statements
+# ---------------------------------------------------------------------------
+
+send_to_like_weighting_factor_min:
+  value: 3
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "derived"
+  confidence: "medium"
+  note: "Derived from Mosseri statements: sends weighted ~3-5× likes for unconnected reach."
+
+send_to_like_weighting_factor_max:
+  value: 5
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "derived"
+  confidence: "medium"
+  note: "Derived from Mosseri statements; upper bound of 3-5× range."
+
+# ---------------------------------------------------------------------------
+# DM activity (§4.4)
+# ---------------------------------------------------------------------------
+
+daily_reels_dm_sends_billion:
+  value: 1.0
+  source: "reels_metrics_comprehensive_v2.md §4.4"
+  provenance: "industry"
+  confidence: "low"
+  note: "Metricool 2025: ~1B/day (~694K/min)."
+
+# ---------------------------------------------------------------------------
+# Skip Rate metric (§4.5) — IG creator-facing, no Meta-published target
+# ---------------------------------------------------------------------------
+
+skip_rate_metric_introduced:
+  value: "2025-08"
+  source: "reels_metrics_comprehensive_v2.md §4.5"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Instagram introduced creator-facing 'Skip Rate' (% of viewers who skip within first 3 seconds) in Aug 2025; replaces 'View Rate'. BabbleBoxx. No Meta-published benchmark for 'good' rate."
+
+skip_rate_no_meta_benchmark:
+  value: true
+  source: "reels_metrics_comprehensive_v2.md §4.5"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Meta has not published a target Skip Rate. Treat as a creator-side observability tool, not a calibration anchor."

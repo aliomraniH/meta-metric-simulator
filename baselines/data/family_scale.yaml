@@ -1,0 +1,232 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    Meta family-scale baselines from §1 of reels_metrics_comprehensive_v2.md.
+    All values are first-party Meta disclosures (earnings, SEC filings,
+    press releases) and so carry "earnings", "sec_filing", or
+    "public_statement" provenance with high confidence.  ⚠️ corrections
+    to dap_billion (was 3.35B in v1 → now 3.58B) and capex_2026_guidance
+    (was $114-118B → now $115-135B) are noted inline per §0 items 1 and 2.
+
+# ---------------------------------------------------------------------------
+# Daily Active People (§1.1)
+# ---------------------------------------------------------------------------
+
+dap_billion:
+  value: 3.58
+  source: "reels_metrics_comprehensive_v2.md §1.1"
+  provenance: "earnings"
+  confidence: "high"
+  note: "⚠️ correction from prior 3.35B per §0 item 1. Meta Q4 2025 press release: 3.58B Dec 2025 average, +7% YoY."
+
+dap_yoy_growth_pct:
+  value: 7.0
+  source: "reels_metrics_comprehensive_v2.md §1.1"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Meta Q4 2025 press release: +7% YoY DAP growth — the headline tempo number Meta publishes."
+
+# ---------------------------------------------------------------------------
+# Revenue (§1.2)
+# ---------------------------------------------------------------------------
+
+fy_2025_revenue_usd_billion:
+  value: 200.97
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Meta 8-K for FY 2025; first time over $200B; +22% YoY."
+
+fy_2025_revenue_yoy_pct:
+  value: 22.0
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "sec_filing"
+  confidence: "high"
+
+q4_2025_revenue_usd_billion:
+  value: 59.89
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Meta Q4 2025 earnings: +24% YoY."
+
+q4_2025_revenue_yoy_pct:
+  value: 24.0
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "earnings"
+  confidence: "high"
+
+q4_2025_foa_revenue_usd_billion:
+  value: 58.94
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Meta 8-K Q4 2025: Family of Apps revenue $58.94B (+24.6% YoY); 98.4% of total."
+
+q4_2025_foa_yoy_pct:
+  value: 24.6
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "sec_filing"
+  confidence: "high"
+
+q4_2025_foa_share_of_total_pct:
+  value: 98.4
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "sec_filing"
+  confidence: "high"
+
+fy_2025_foa_revenue_usd_billion:
+  value: 197.0
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "Annualized estimate. §1.2 reports Q4 2025 FoA at $58.94B and FoA at 98.4% of total revenue, but does not state an FY 2025 FoA figure verbatim. Modeled as 98.0% of FY 2025 total ($200.97B); calibration tests should not anchor on this value."
+
+q4_2025_foa_operating_income_usd_billion:
+  value: 30.77
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Meta 8-K Q4 2025: $30.77B FoA operating income; +51% YoY."
+
+q4_2025_operating_margin_pct:
+  value: 41.0
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "41% Q4 2025; Q4 compressed ~700 bps YoY due to R&D ramp."
+
+fy_2025_operating_margin_pct:
+  value: 41.0
+  source: "reels_metrics_comprehensive_v2.md §1.2"
+  provenance: "sec_filing"
+  confidence: "high"
+
+# ---------------------------------------------------------------------------
+# Q1 2026 guidance — verbatim Susan Li quote from §1.7
+# ---------------------------------------------------------------------------
+
+q1_2026_revenue_guidance_usd_billion:
+  low:
+    value: 53.5
+    source: "reels_metrics_comprehensive_v2.md §1.7"
+    provenance: "public_statement"
+    confidence: "high"
+  high:
+    value: 56.5
+    source: "reels_metrics_comprehensive_v2.md §1.7"
+    provenance: "public_statement"
+    confidence: "high"
+  consensus_usd_billion:
+    value: 55.6
+    source: "reels_metrics_comprehensive_v2.md §1.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "Analyst consensus referenced in §1.2; the Q1 2026 print is post-snapshot (April 29, 2026)."
+  fx_tailwind_pct:
+    value: 4.0
+    source: "reels_metrics_comprehensive_v2.md §1.7"
+    provenance: "public_statement"
+    confidence: "high"
+  verbatim_quote: |
+    "We expect first quarter 2026 total revenue to be in the range of $53.5–56.5 billion. Our guidance assumes foreign currency is an approximately 4% tailwind to year-over-year total revenue growth."
+  speaker: "Susan Li"
+  source_event: "Meta Q4 2025 earnings call, January 28, 2026"
+
+# ---------------------------------------------------------------------------
+# Capex (§1.3)
+# ---------------------------------------------------------------------------
+
+fy_2025_capex_usd_billion:
+  value: 72.22
+  source: "reels_metrics_comprehensive_v2.md §1.3"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Meta Q4 2025 press release: FY 2025 capex actual $72.22B (Q4 alone $22.1B)."
+
+q4_2025_capex_usd_billion:
+  value: 22.1
+  source: "reels_metrics_comprehensive_v2.md §1.3"
+  provenance: "earnings"
+  confidence: "high"
+
+capex_2026_guidance_usd_billion:
+  low:
+    value: 115.0
+    source: "reels_metrics_comprehensive_v2.md §1.3"
+    provenance: "earnings"
+    confidence: "high"
+    note: "⚠️ correction from prior $114-118B per §0 item 2."
+  high:
+    value: 135.0
+    source: "reels_metrics_comprehensive_v2.md §1.3"
+    provenance: "earnings"
+    confidence: "high"
+    note: "⚠️ correction from prior $114-118B per §0 item 2."
+  midpoint:
+    value: 125.0
+    source: "reels_metrics_comprehensive_v2.md §1.3"
+    provenance: "earnings"
+    confidence: "high"
+    note: "Roughly 2× FY 2025 actual of $72.2B."
+
+# ---------------------------------------------------------------------------
+# Reality Labs (§1.4)
+# ---------------------------------------------------------------------------
+
+reality_labs_q4_2025_operating_loss_usd_billion:
+  value: 6.02
+  source: "reels_metrics_comprehensive_v2.md §1.4"
+  provenance: "sec_filing"
+  confidence: "high"
+
+reality_labs_fy_2025_operating_loss_usd_billion:
+  value: 19.19
+  source: "reels_metrics_comprehensive_v2.md §1.4"
+  provenance: "sec_filing"
+  confidence: "high"
+
+reality_labs_cumulative_loss_since_2020_usd_billion:
+  value: 80.0
+  source: "reels_metrics_comprehensive_v2.md §1.4"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "~$80B cumulative since 2020 per Meta 8-K."
+
+# ---------------------------------------------------------------------------
+# Q4 2025 ad metrics (§1.5) — calibration anchors for test_01 and test_04
+# ---------------------------------------------------------------------------
+
+q4_2025_ad_impressions_yoy_pct:
+  value: 18.0
+  source: "reels_metrics_comprehensive_v2.md §1.5"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Calibration anchor for test_01_time_share_growth and test_04_gem_lattice."
+
+q4_2025_price_per_ad_yoy_pct:
+  value: 6.0
+  source: "reels_metrics_comprehensive_v2.md §1.5"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Calibration anchor for test_01_time_share_growth and test_04_gem_lattice."
+
+# ---------------------------------------------------------------------------
+# Headcount (§1.6)
+# ---------------------------------------------------------------------------
+
+headcount_dec_2025:
+  value: 78865
+  source: "reels_metrics_comprehensive_v2.md §1.6"
+  provenance: "sec_filing"
+  confidence: "high"
+  note: "Meta 8-K: 78,865 as of Dec 31 2025; +6% YoY."
+
+headcount_yoy_pct:
+  value: 6.0
+  source: "reels_metrics_comprehensive_v2.md §1.6"
+  provenance: "sec_filing"
+  confidence: "high"

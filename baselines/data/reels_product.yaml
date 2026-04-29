@@ -1,0 +1,187 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    Reels product baselines from §4.1 and §4.2 of
+    reels_metrics_comprehensive_v2.md.  Mix of first-party Meta
+    disclosures (Q4 2025 earnings; Zuckerberg Q3 2025 run-rate quote;
+    Susan Li Q4 2025 watch-time growth) and industry analyst figures
+    (Sensor Tower share-of-time and share-of-ads; Tinuiti impression
+    mix; Gupta Media blended CPM).  Two §0 cross-checks load-bearing
+    here: §0 item 3 (run rate $50B is the anchor through 2026-04-28; do
+    NOT update from Q1 2026 earnings until v2.1) and §4.1's daily-plays
+    figure carrying flag:stale.
+
+# ---------------------------------------------------------------------------
+# Time and engagement share (§4.1)
+# ---------------------------------------------------------------------------
+
+share_of_us_ig_time_pct:
+  value: 46
+  source: "reels_metrics_comprehensive_v2.md §4.1"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Sensor Tower via CNBC Jan 2026: Reels share of US IG time 46% in 2025 (vs 37% in 2024). Calibration anchor for test_01_time_share_growth."
+  historical:
+    q4_2024:
+      value: 37
+      source: "reels_metrics_comprehensive_v2.md §4.1"
+      provenance: "industry"
+      confidence: "medium"
+      note: "Sensor Tower; pre-ramp baseline."
+    q4_2025:
+      value: 46
+      source: "reels_metrics_comprehensive_v2.md §4.1"
+      provenance: "industry"
+      confidence: "medium"
+      note: "Sensor Tower; post-ramp endpoint used by test_01."
+
+watch_time_growth_us_yoy_pct_q4_2025:
+  value: 30
+  source: "reels_metrics_comprehensive_v2.md §4.1"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Susan Li Q4 2025 earnings call. Original quote uses '+30%+ YoY'; recorded here as 30 with the note that the verbatim is '30%+'."
+
+daily_plays_billion_combined:
+  value: 200
+  source: "reels_metrics_comprehensive_v2.md §4.1"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "flag:stale — value last refreshed Q2 2023; flagged for re-pull per §4.1. Daily Reels plays (IG + FB combined). Meta has not re-published this number since."
+
+daily_reshares_billion:
+  value: 4.5
+  source: "reels_metrics_comprehensive_v2.md §4.1"
+  provenance: "estimate"
+  confidence: "low"
+  note: "DemandSage / Vidico aggregator."
+
+fb_same_day_surfacing_qoq_pct_q4_2025:
+  value: 25
+  source: "reels_metrics_comprehensive_v2.md §4.1"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Q4 2025 transcript: FB same-day Reels surfacing +25% QoQ."
+
+original_content_share_us_recommendations_pct_q4_2025:
+  value: 75
+  source: "reels_metrics_comprehensive_v2.md §4.1"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Q4 2025 transcript: original-content share of IG recommendations US 75%, +10pp in Q4."
+
+edits_app_share_of_daily_views_pct_q4_2025:
+  value: 10
+  source: "reels_metrics_comprehensive_v2.md §4.1"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Q4 2025 transcript: Edits app share of viewed Reels ~10% of daily Reels views, ~3× QoQ."
+
+# ---------------------------------------------------------------------------
+# Monetization (§4.2)
+# ---------------------------------------------------------------------------
+
+run_rate_usd_billion:
+  value: 50
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "earnings"
+  confidence: "high"
+  note: "ANCHOR through 2026-04-28 per §0 item 3; do NOT update from Q1 2026 earnings until v2.1 refresh. Verbatim Zuckerberg Q3 2025 earnings call (2025-10-29): 'over $50B annual run rate'. NOT refreshed in Q4 2025 call."
+  speaker: "Mark Zuckerberg"
+  source_event: "Meta Q3 2025 earnings call, October 29, 2025"
+  verbatim_quote: '"over $50B annual run rate"'
+
+share_of_ig_ads_pct_q4_2025:
+  value: 53
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Sensor Tower via CNBC Jan 2026. Calibration anchor for test_02_ad_load_ramp."
+  historical:
+    q4_2024:
+      value: 35
+      source: "reels_metrics_comprehensive_v2.md §4.2"
+      provenance: "industry"
+      confidence: "medium"
+      note: "Sensor Tower; pre-ramp baseline."
+    q4_2025:
+      value: 53
+      source: "reels_metrics_comprehensive_v2.md §4.2"
+      provenance: "industry"
+      confidence: "medium"
+      note: "Sensor Tower; post-ramp endpoint used by test_02 (35→53)."
+
+q2_2025_us_ig_impression_mix:
+  stories_pct:
+    value: 44
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "Tinuiti via eMarketer."
+  feed_pct:
+    value: 31
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "Tinuiti via eMarketer."
+  reels_pct:
+    value: 21
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "Tinuiti via eMarketer. Reels share of Q2 2025 US IG ad impressions 21% (vs 13% Q2 2024) — corroborating slope for test_02."
+
+reels_vs_feed_efficiency_ratio:
+  value: 0.90
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "synthesized_2026-04-28"
+  confidence: "low"
+  note: "flag:not_disclosed — Meta has stopped publishing the ratio. Industry-implied 0.85-0.95 range with the gap narrowing per eMarketer Jan 2026 / Tinuiti commentary. Modeled estimate; calibration test_01 tunes."
+  range_low:
+    value: 0.85
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+  range_high:
+    value: 0.95
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "synthesized_2026-04-28"
+    confidence: "low"
+
+meta_blended_advertiser_cpm_usd_oct_2025:
+  value: 6.59
+  source: "reels_metrics_comprehensive_v2.md §4.2"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Gupta Media. Meta blended advertiser CPM Oct 2025."
+
+reels_cpm_usd_tier_1:
+  low:
+    value: 10
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "estimate"
+    confidence: "low"
+    note: "Adamigo 2026: Tier-1 (US/UK/AU) Reels CPM range bottom."
+  high:
+    value: 23
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "estimate"
+    confidence: "low"
+    note: "Adamigo 2026: Tier-1 range top; finance/SaaS $20+."
+
+reels_cpm_usd_tier_2:
+  low:
+    value: 1
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "estimate"
+    confidence: "low"
+    note: "Adamigo 2026: Tier-2 (LatAm/India/SEA) Reels CPM range bottom."
+  high:
+    value: 5
+    source: "reels_metrics_comprehensive_v2.md §4.2"
+    provenance: "estimate"
+    confidence: "low"
+    note: "Adamigo 2026: Tier-2 range top."

@@ -1,0 +1,147 @@
+_meta:
+  owner: "external_facts"
+  refresh_cadence_days: 90
+  last_updated: "2026-04-28"
+  layer: 4
+  description: |
+    Instagram platform baselines from §3 of reels_metrics_comprehensive_v2.md.
+    User-base figures are public_statement / high (Mosseri / Zuckerberg
+    announcements).  DAU/MAU ratio is derived from Zuckerberg's
+    qualitative "just shy of 2 billion" — Meta does not officially
+    disclose DAU.  Time-spent and ad-revenue figures are eMarketer /
+    industry analyst with medium confidence.  Top-region user counts
+    use DataReportal as the primary baseline; the 472-480M Backlinko /
+    Sprout Social India figure is recorded only as a methodology note
+    (alternative aggregators differ).
+
+# ---------------------------------------------------------------------------
+# User base (§3.1)
+# ---------------------------------------------------------------------------
+
+mau_billion:
+  value: 3.0
+  source: "reels_metrics_comprehensive_v2.md §3.1"
+  provenance: "public_statement"
+  confidence: "high"
+  note: "Mosseri / Zuckerberg announcement 2025-09-24 via TechCrunch."
+
+dau_qualitative:
+  value: "just shy of 2 billion"
+  source: "reels_metrics_comprehensive_v2.md §3.1"
+  provenance: "earnings"
+  confidence: "high"
+  note: "Zuckerberg verbatim quote, Meta Q4 2025 earnings call (2026-01-28). Stored as a string field — Meta does not publish a precise IG DAU number."
+  speaker: "Mark Zuckerberg"
+  source_event: "Meta Q4 2025 earnings call, January 28, 2026"
+
+dau_mau_ratio_derived:
+  value: 0.65
+  source: "reels_metrics_comprehensive_v2.md §3.1"
+  provenance: "derived"
+  confidence: "medium"
+  note: "Meta does not officially disclose; derived from §3.1 qualitative quote ('just shy of 2 billion' DAU vs 3.0B MAU). Treat as a directional anchor, not a tunable input."
+
+# ---------------------------------------------------------------------------
+# Time spent (§3.2)
+# ---------------------------------------------------------------------------
+
+avg_daily_time_spent_minutes_us_adults:
+  value: 33.1
+  source: "reels_metrics_comprehensive_v2.md §3.2"
+  provenance: "industry"
+  confidence: "medium"
+  note: "Cropink / eMarketer."
+
+avg_daily_time_spent_by_generation:
+  gen_z:
+    value: 53
+    source: "reels_metrics_comprehensive_v2.md §3.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "eMarketer US, minutes/day."
+  millennials:
+    value: 35
+    source: "reels_metrics_comprehensive_v2.md §3.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "eMarketer US, minutes/day."
+  gen_x:
+    value: 28
+    source: "reels_metrics_comprehensive_v2.md §3.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "eMarketer US, minutes/day."
+  boomers:
+    value: 20
+    source: "reels_metrics_comprehensive_v2.md §3.2"
+    provenance: "industry"
+    confidence: "medium"
+    note: "eMarketer US, minutes/day."
+
+# ---------------------------------------------------------------------------
+# Ad revenue (§3.3) — Meta does not separately disclose IG; eMarketer estimate
+# ---------------------------------------------------------------------------
+
+ad_revenue_2025_usd_billion_emarketer:
+  value: 71.0
+  source: "reels_metrics_comprehensive_v2.md §3.3"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "eMarketer / BusinessTats. Meta does not separately disclose IG ad revenue."
+
+ad_revenue_2025_usd_billion_alternative:
+  value: 83.6
+  source: "reels_metrics_comprehensive_v2.md §3.3"
+  provenance: "estimate"
+  confidence: "low"
+  note: "Quantumrun citing eMarketer; methodology variance with primary 71B figure. $37.1B US slice cited in same source."
+
+share_of_meta_ad_revenue_pct_global:
+  value: 37
+  source: "reels_metrics_comprehensive_v2.md §3.3"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "Vidico / BusinessTats."
+
+share_of_meta_ad_revenue_pct_us:
+  value: 50
+  source: "reels_metrics_comprehensive_v2.md §3.3"
+  provenance: "estimate"
+  confidence: "medium"
+  note: "Vidico / BusinessTats."
+
+# ---------------------------------------------------------------------------
+# Top regions (§3.4)
+# ---------------------------------------------------------------------------
+
+top_regions:
+  india_users_million:
+    value: 392
+    source: "reels_metrics_comprehensive_v2.md §3.4"
+    provenance: "industry"
+    confidence: "medium"
+    note: "DataReportal April 2026, sourced from Meta ad-tools API. Alternative aggregators (Backlinko, Sprout Social) cite 472-480M; methodology differs. DataReportal used as primary baseline."
+  us_users_million:
+    value: 172
+    source: "reels_metrics_comprehensive_v2.md §3.4"
+    provenance: "industry"
+    confidence: "medium"
+    note: "DataReportal April 2026."
+  brazil_users_million:
+    value: 141
+    source: "reels_metrics_comprehensive_v2.md §3.4"
+    provenance: "industry"
+    confidence: "medium"
+    note: "DataReportal April 2026."
+  indonesia_users_million_low:
+    value: 100
+    source: "reels_metrics_comprehensive_v2.md §3.4"
+    provenance: "industry"
+    confidence: "medium"
+    note: "DataReportal April 2026; range bottom (100-109M)."
+  indonesia_users_million_high:
+    value: 109
+    source: "reels_metrics_comprehensive_v2.md §3.4"
+    provenance: "industry"
+    confidence: "medium"
+    note: "DataReportal April 2026; range top (100-109M)."
