@@ -311,8 +311,9 @@ def _yaml_value(file_path: str | Path, dotted: str) -> Any:
 
 def _evaluate_yaml_assertion(a: dict[str, Any], default_tol: float) -> AssertionResult:
     actual = _yaml_value(a["file"], a["field_path"])
-    if a["comparison"] == "yaml_present":
-        # Special form: must_contain check.
+    # `yaml_present` assertions check for substring presence and have no
+    # `comparison` field — handle them on the `type` discriminator.
+    if a.get("type") == "yaml_present":
         must_contain = a.get("must_contain", "")
         passed = isinstance(actual, str) and must_contain in actual
         return AssertionResult(
