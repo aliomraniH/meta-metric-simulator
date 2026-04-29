@@ -271,6 +271,24 @@ _FORBIDDEN_DDL = re.compile(
     re.IGNORECASE,
 )
 
+# SQL comment strippers — applied before any of the content-scanning rules
+# so prose in `-- this metric joins X to Y ...` doesn't trip the table /
+# DDL / placeholder regexes.
+_LINE_COMMENT_RE = re.compile(r"--[^\n]*")
+_BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
+
+
+def _strip_sql_comments(sql: str) -> str:
+    """Remove `-- ...` line comments and `/* ... */` block comments.
+
+    Used by the validation regexes so author commentary inside the SQL
+    body cannot accidentally match table / DDL / placeholder patterns.
+    Returns SQL with comments replaced by single spaces (so adjacent
+    tokens that wrapped a comment stay separated).
+    """
+    no_block = _BLOCK_COMMENT_RE.sub(" ", sql)
+    return _LINE_COMMENT_RE.sub(" ", no_block)
+
 
 def compile_metric(definition: MetricDefinition) -> CompiledMetric:
     """Run compile-time validation on the SQL body and wrap it for execution."""
@@ -283,13 +301,19 @@ def compile_metric(definition: MetricDefinition) -> CompiledMetric:
             f"{src}: SQL body must reference :scenario_id (metrics are scenario-scoped)"
         )
 
+    # Strip SQL comments before applying the content-scanning rules below
+    # so prose in `-- this metric does X` doesn't trip table/DDL/placeholder
+    # regexes.  The :scenario_id check above intentionally runs against the
+    # raw body — having :scenario_id only inside a comment should still fail.
+    code_only = _strip_sql_comments(body)
+
     # 2. No string-format placeholders besides {group_by}.
-    if _FORBIDDEN_PERCENT.search(body):
+    if _FORBIDDEN_PERCENT.search(code_only):
         raise MetricCompilationError(
             f"{src}: SQL body contains forbidden %s/%(name)s placeholders. "
             "Use named :params via SQLAlchemy text() bindings."
         )
-    bad_curly = [m for m in _CURLY_PLACEHOLDER.findall(body) if m != "group_by"]
+    bad_curly = [m for m in _CURLY_PLACEHOLDER.findall(code_only) if m != "group_by"]
     if bad_curly:
         raise MetricCompilationError(
             f"{src}: SQL body contains forbidden curly placeholders: {bad_curly}. "
@@ -298,14 +322,14 @@ def compile_metric(definition: MetricDefinition) -> CompiledMetric:
         )
 
     # 3. No mutating statements.
-    if _FORBIDDEN_DDL.search(body):
+    if _FORBIDDEN_DDL.search(code_only):
         raise MetricCompilationError(
             f"{src}: SQL body contains forbidden DDL/DML keywords. "
             "Metrics are SELECT-only."
         )
 
     # 4. Tables must be in the substrate set.
-    referenced = {t.lower() for t in _TABLE_RE.findall(body)}
+    referenced = {t.lower() for t in _TABLE_RE.findall(code_only)}
     bad_tables = sorted(referenced - ALLOWED_TABLES)
     if bad_tables:
         raise MetricCompilationError(
