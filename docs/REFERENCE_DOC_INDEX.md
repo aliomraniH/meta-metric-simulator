@@ -94,3 +94,72 @@ provenance string outside the registered set, and never raise confidence
 above "low" to make a missing value look better than it is — the
 audit will see through it and the calibration suite is the thing that
 actually validates the choice.
+
+---
+
+## 3. Special-tag handling
+
+The reference doc uses four conventional tags to mark values that need
+non-default handling.  Each maps to a specific yaml-author obligation
+below.
+
+### `flag:not_disclosed`
+
+The tag means Meta (or the relevant competitor) has not publicly
+disclosed the value.  The reference doc records the absence and lists
+the best available proxy.  Examples: §3.1 IG DAU/MAU ratio (derived
+from a qualitative quote, not disclosed officially); §4.2 Reels-vs-Feed
+eCPM efficiency ratio (Meta has stopped publishing the ratio); §4.6
+Reels-specific violating prevalence; §4.8 creator Gini coefficient; §4.9
+crash-free session rate and p95 cold-start; §5.3 Spotlight MAU.  When
+a yaml file encounters such a value: if the simulator architecturally
+requires it (an algorithm or calibration test reads it), fill the
+`{value, source, provenance, confidence}` block with the synthesized
+defaults per §2 of this index plus a `note` field of the form
+`"Meta does not publicly disclose; modeled from <proxy>"`; if the value
+is purely informational and no code reads it, omit it from the yaml
+entirely.  Never raise confidence above "low" for a not_disclosed value.
+
+### `flag:stale`
+
+The tag means the value's source last refreshed it more than 12 months
+ago and the upstream publisher has not re-validated since.  Example:
+§4.1 "Daily Reels plays (IG + FB combined) ~200B+", last refreshed by
+Meta in mid-2023.  When a yaml file encounters such a value: keep the
+value and its original `provenance` and `confidence` (a stale public
+statement is still a public statement), and add a `note` field of the
+form `"value last refreshed [original date]; flagged for re-pull"`.
+The Layer-5 curation agent (M13) prioritises stale values on the next
+refresh pass.  Calibration tests should not anchor on stale values
+without an additional sanity check.
+
+### `⚠️ correction`
+
+The tag means the v2 reference doc revises a value that was wrong in v1.
+Examples: §1.1 family DAP corrected from 3.35B → 3.58B (per Meta Q4
+2025 press release); §1.3 2026 capex guidance corrected from $114–118B
+→ $115–135B.  When a yaml file encounters a corrected value: persist
+ONLY the corrected value, with the original-document provenance.  Do
+not preserve the prior value as an alternate field.  The §0 critical-
+calibration-notes block in the reference doc is the audit trail; that
+is sufficient — the yaml should not litter itself with retracted
+numbers.  Authors reviewing a diff against an earlier yaml should
+expect a value change here; the `_meta.last_updated: "2026-04-28"` is
+the cue that a correction landed.
+
+### `interview_pitfall`
+
+The tag flags a class of mistake that interview candidates commonly
+make and that the simulator's question generation and answer evaluation
+must surface.  Examples: §2 denominator differences (Meta has 65% of
+social ad spend OR 27% of digital ad spend depending on the universe);
+§6.2 view-definition asymmetry between IG / FB / Shorts / TikTok; §8.3
+the 25/30/25/20 rubric weights are a community estimate, not Meta-
+published.  When a yaml file encounters such a value: persist the value
+normally, but the file's owning layer must surface the pitfall in the
+appropriate place — `interview/rubric/meta_at_rubric.yaml` (M17) for
+rubric-weight pitfalls, `baselines/data/view_definition_asymmetry.yaml`
+(M6) for view-definition pitfalls, and `tools/baseline_tools.py` (M18)
+for denominator-asymmetry pitfalls.  The interview question gen and
+evaluator (M17) read these markers and inject explicit candidate
+warnings into question text and rubric scoring.
