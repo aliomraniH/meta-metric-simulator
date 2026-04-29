@@ -738,3 +738,111 @@ primary_sources:
     confidence: "high"
     trust_tier: 2
     verify_during_m12: true
+
+# ===========================================================================
+# Section 3 — validation
+# ---------------------------------------------------------------------------
+# Drives the M8 provenance audit (curation/provenance_audit.py).  The audit
+# walks every yaml under expected_yaml_files_using_registry, checks every
+# numeric value's {value, source, provenance, confidence} block, resolves
+# the source through section_refs → primary_sources, and fails or warns
+# per the rules below.
+# ===========================================================================
+
+validation:
+
+  expected_yaml_files_using_registry:
+    - "params/creator_economics.yaml"
+    - "params/guardrail_thresholds.yaml"
+    - "params/integrity_dynamics.yaml"
+    - "params/monetization_curves.yaml"
+    - "params/ranking_weights.yaml"
+    - "params/segment_propensities.yaml"
+    - "baselines/data/competitors_snap_spotlight.yaml"
+    - "baselines/data/competitors_tiktok.yaml"
+    - "baselines/data/competitors_youtube_shorts.yaml"
+    - "baselines/data/family_scale.yaml"
+    - "baselines/data/instagram_platform.yaml"
+    - "baselines/data/reels_creator.yaml"
+    - "baselines/data/reels_engagement.yaml"
+    - "baselines/data/reels_integrity.yaml"
+    - "baselines/data/reels_monetization.yaml"
+    - "baselines/data/reels_product.yaml"
+    - "baselines/data/reels_regional.yaml"
+    - "baselines/data/view_definition_asymmetry.yaml"
+
+  audit_command: "python -m curation.provenance_audit"
+
+  audit_will_fail_when:
+    - "any numeric value is missing the `source` field"
+    - "any numeric value is missing the `provenance` field"
+    - "any numeric value is missing the `confidence` field"
+    - "the `source` string does not appear as a key in section_refs"
+    - "any primary_source id referenced by section_refs has no entry in primary_sources"
+    - "the `provenance` value is not in the allowed set: {earnings, sec_filing, industry, public_statement, estimate, derived, synthesized_2026-04-28}"
+    - "the `confidence` value is not in the allowed set: {high, medium, low}"
+    - "the `_meta` block is missing or has the wrong layer (params/ must be layer 3; baselines/data/ must be layer 4)"
+    - "the §0 corrections are violated (see meta_q4_2025_anchor_check below)"
+    - "baselines/data/view_definition_asymmetry.yaml is missing or empty (M18 acceptance also asserts this)"
+
+  audit_warns_when:
+    - "a primary_source entry still has `url: PLACEHOLDER` (skeleton from M6c-ii pass 1; expected to be filled during M12 curation refresh)"
+    - "a primary_source entry has `verify_during_m12: true` and the `last_updated` date is older than the refresh_cadence_days window"
+    - "a value with `provenance: synthesized_2026-04-28` lacks a `note` field explaining the synthesis or the closest proxy (per REFERENCE_DOC_INDEX §2)"
+    - "a value carries `flag:not_disclosed` in its note but `provenance` is not `synthesized_2026-04-28`"
+    - "a value carries `flag:stale` in its note but the original `provenance` and `confidence` were not preserved"
+    - "a primary_source has no `aliases` field — alias coverage will be filled in M6c-iii or by the M12 reconciler subagent"
+    - "a section_ref maps to a list of >5 primary_sources (suggests the ref is doing too much; consider splitting the source field in the upstream yaml)"
+
+  non_100_sum_exemptions:
+    # Sets of fields whose values are intentionally non-100 in sum.
+    # The audit normally warns on percentage fields that don't sum to 100
+    # within their containing block; these exemptions silence that warning.
+    - file: "params/creator_economics.yaml"
+      field_path: "tier_distribution_pct"
+      reason: "HypeAuditor State of Influencer Marketing 2025 reports overlapping tiers (nano <10K, micro 10K-50K vs 10K-100K). Per §4.8 and the file's note, the non-100 sum is intentional."
+    - file: "baselines/data/reels_creator.yaml"
+      field_path: "tier_distribution_pct"
+      reason: "Same HypeAuditor source; same overlapping-tiers reason."
+    - file: "baselines/data/competitors_tiktok.yaml"
+      field_path: "usds_deal_status.ownership_pct"
+      reason: "ByteDance retained 19.9% + existing ByteDance investors 30% + Oracle/Silver Lake/MGX 15% each (45%) = 94.9%; remaining ~5% is unallocated public-investor float per §5.1.5. Sum is intentionally <100."
+    - file: "baselines/data/competitors_youtube_shorts.yaml"
+      field_path: "shorts_creator_revshare_pct"
+      reason: "Single value (45) representing creator share; the complementary 55% YouTube share is recorded in the entry's note, not as a sibling field. Not a percentage-set."
+    - file: "baselines/data/instagram_platform.yaml"
+      field_path: "share_of_meta_ad_revenue_pct_global"
+      reason: "Global share (37%) and US share (50%) are independent estimates over different denominators, not components of a single 100% partition."
+
+  meta_q4_2025_anchor_check:
+    # Per §0 items 1 and 2, two values were corrected in v2 of the reference
+    # doc.  The audit asserts the corrected values appear in
+    # baselines/data/family_scale.yaml and that the prior (incorrect)
+    # values do NOT appear anywhere in params/ or baselines/data/.
+    dap_billion:
+      file: "baselines/data/family_scale.yaml"
+      field_path: "dap_billion.value"
+      expected: 3.58
+      forbidden_prior_value: 3.35
+      source_id: "meta_q4_2025_press_release"
+      note: "§0 item 1: corrected from 3.35B → 3.58B."
+    capex_2026_guidance_low:
+      file: "baselines/data/family_scale.yaml"
+      field_path: "capex_2026_guidance_usd_billion.low.value"
+      expected: 115
+      forbidden_prior_value: 114
+      source_id: "meta_q4_2025_press_release"
+      note: "§0 item 2: corrected from 114-118B → 115-135B (low bound)."
+    capex_2026_guidance_high:
+      file: "baselines/data/family_scale.yaml"
+      field_path: "capex_2026_guidance_usd_billion.high.value"
+      expected: 135
+      forbidden_prior_value: 118
+      source_id: "meta_q4_2025_press_release"
+      note: "§0 item 2: corrected from 114-118B → 115-135B (high bound)."
+    reels_run_rate_anchor:
+      file: "baselines/data/reels_product.yaml"
+      field_path: "run_rate_usd_billion.value"
+      expected: 50
+      source_id: "zuckerberg_q3_2025_earnings_call"
+      note: "§0 item 3: anchor through 2026-04-28; do NOT update from Q1 2026 earnings until v2.1 refresh."
