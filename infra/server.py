@@ -51,11 +51,12 @@ def build_app() -> FastMCP:
 
     auth = build_oauth_provider()
 
+    # Stateful streamable-http (required for sampling/elicitation/roots) is
+    # passed at run-time via run_http_async(stateless_http=False) per
+    # FastMCP 3.x API; the constructor no longer accepts stateless_http.
     app = FastMCP(
         name="Reels Hybrid",
         auth=auth,
-        # Stateful streamable-http: required for sampling/elicitation/roots.
-        stateless_http=False,
     )
 
     # Wire the Redis-backed EventStore for Last-Event-ID resumability.
@@ -66,10 +67,16 @@ def build_app() -> FastMCP:
     # implementations replace these in later milestones; the namespace
     # contract (l4, l5, l6, l8) is fixed now so downstream tools can be
     # written against it.
-    app.mount(_placeholder_server("baselines", "l4"), prefix="l4")
-    app.mount(_placeholder_server("curation", "l5"), prefix="l5")
-    app.mount(_placeholder_server("engine_compiler", "l6"), prefix="l6")
-    app.mount(_placeholder_server("insights", "l8"), prefix="l8")
+    #
+    # Layer 4 (baselines) is real as of M12c-iii — agentic ingestion of
+    # external facts via extract_metric + sanitize_* + synthesize_baseline.
+    # Surfaces as l4_extract_metric, l4_sanitize_schema, l4_sanitize_policy,
+    # l4_sanitize_source_tier, l4_synthesize_baseline at the front door.
+    from baselines.server import baselines_server  # noqa: E402
+    app.mount(baselines_server, namespace="l4")
+    app.mount(_placeholder_server("curation", "l5"), namespace="l5")
+    app.mount(_placeholder_server("engine_compiler", "l6"), namespace="l6")
+    app.mount(_placeholder_server("insights", "l8"), namespace="l8")
 
     return app
 

@@ -265,8 +265,14 @@ def hooks_for_layer(layer: str) -> dict[str, list[HookFn]]:
     from orchestrator.deliberation import get as get_contract
 
     contract = get_contract(layer)
+    # PreToolUse stack: layer-isolation guard runs FIRST so a denied write
+    # never reaches the sanitize/synthesize gate.  Both hooks are belt-and-
+    # braces with the per-tool target_file checks inside synthesize_*.
     return {
-        "PreToolUse": [make_sanitize_pretooluse_hook(contract)],
+        "PreToolUse": [
+            make_layer_isolation_hook(),
+            make_sanitize_pretooluse_hook(contract),
+        ],
         "PostToolUse": [make_synthesize_posttooluse_hook(contract)],
     }
 
