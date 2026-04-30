@@ -11,3 +11,7 @@ htmlcov/
 venv/
 *.log
 .DS_Store
+
+# Derived from docs/architecture_research.pdf via pdftotext for in-process
+# Read access; the PDF is the canonical source.
+docs/architecture_research.txt
