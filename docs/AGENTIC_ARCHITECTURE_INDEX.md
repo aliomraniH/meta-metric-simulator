@@ -37,6 +37,107 @@ The deterministic engine consumes whatever manifest the agentic
 sublayer produces, so the calibration lock remains binding even on
 agentic-authored scenarios. (PDF §3.4)
 
+## 2. Sanitize/synthesize gate policy
+
+Two gate compositions (strict and soft), four architectural options
+(A/B/C/D) mapping to specific layers, and the closed registry of
+`synthesize_*` tools that are the sole writers to canonical state.
+Cite PDF §2 (the three-step pattern), §9.2 (strict gate stack), §9.3
+(soft gate stack).
+
+### 2.1 Strict gate composition (PDF §9.2)
+
+The full stack used for L4 baselines (M12) and L5 curation (M13):
+
+1. **Schema sanitizer** — deterministic; validates ExtractedMetric
+   against the canonical Pydantic schema. ~$0.0001 / call.
+2. **Provenance sanitizer** — deterministic; checks
+   `{value, source, provenance, confidence}` block presence and
+   non-emptiness. ~$0.0001 / call.
+3. **Source-tier sanitizer** — deterministic; resolves source through
+   `curation/sources_registry.yaml` and checks trust tier
+   (1=SEC > 2=earnings_call > 3=analyst > 4=blog).
+4. **Bound sanitizer** — deterministic; checks value within plausible
+   range derived from existing baselines (e.g. percentages in [0, 100],
+   eCPM not 100× expected).
+5. **Synthesizer (Opus 4.7)** with `thinking_budget=16000`, ~$0.10 /
+   call; reads the proposal plus accumulated sanitizer flags and
+   returns a `SynthesizerDecision(decision, confidence, rationale,
+   accepted_fixes, unresolved_disputes)`.
+6. **PreToolUse hook blocks** if `confidence < 0.85` OR
+   `severity ≥ high` (per the layer's DeliberationContract from M1).
+7. **`ctx.elicit()` for human approval** on borderline cases or
+   `decision == "escalate"`. The escalation path is the strict gate's
+   answer to high-uncertainty proposals — never auto-write under
+   uncertainty.
+
+Cost per write: **~$0.10 + sanitizer overhead.** Latency: **~5–10s.**
+Appropriate for high-stakes writes (calibrated baselines); over-
+engineering for narration. (PDF §9.2)
+
+### 2.2 Soft gate composition (PDF §9.3)
+
+The lighter stack used for L6 scenario synthesis (M15) and L8 insights
+(M16):
+
+1. **PostToolUse hook annotates** the output with
+   `{disputed, confidence, disputed_by}` so downstream consumers can
+   see uncertainty.
+2. **No PreToolUse block** — soft mode allows the write; the user
+   reads the output and has agency to push back.
+3. **Optional LLM-as-judge** for ambiguous content, but **not gating**.
+   When invoked it informs the `disputed` flag rather than blocking
+   the write.
+
+Cost per write: **~$0.001** (annotation only). Latency: **<1s.** The
+cost of an off-tone insight is low; the cost of always-strict is high
+(latency, $$, false positives). (PDF §9.3)
+
+### 2.3 Four options mapped to layers (PDF §2.2)
+
+| Option | Pattern                                        | Layer                              | Implementation complexity | False positive rate              | Token cost                                          | When to use                                                            |
+|--------|------------------------------------------------|------------------------------------|----------------------------|----------------------------------|------------------------------------------------------|-------------------------------------------------------------------------|
+| A      | Hook-only gate                                  | L8 insights                         | Low                        | Low                              | Minimal (deterministic hooks)                        | Soft gate, low-stakes outputs (narration)                              |
+| B      | Sanitizer-as-tool + synthesizer-as-judge        | L4 baselines                        | Medium                     | Medium                           | Sanitizer (Haiku 4.5) + synthesizer (Opus 4.7)       | Strict gate, high-stakes writes                                        |
+| C      | Evaluator-optimizer loop (N=2)                  | L6 scenario synthesis sublayer       | Medium–high                | Low (iterates until quality)     | N × (compiler + evaluator)                           | Soft gate, exploratory outputs where iteration improves quality        |
+| D      | Constitutional critique-revise                  | L5 curation                          | Medium                     | Medium                           | Single LLM call with critique–revise loop            | Strict gate, where the constitution is well-articulated                |
+
+The four options share the three-step skeleton (agent proposes →
+sanitize/critique → synthesize/commit) but differ in **where the
+judgment lives**. Option A pushes judgment into the deterministic
+hook; Option B pushes it into a separate Opus judge; Option C makes
+the agent self-iterate against an evaluator; Option D wraps the agent
+in a written constitution and forces a critique-revise turn within
+the same model call. (PDF §2.2)
+
+### 2.4 `synthesize_*` tool registry — the sole writers
+
+Every write to canonical state goes through one of these five tools.
+Every other tool in the agentic layers is `readOnlyHint=True`.
+
+| Tool                       | Milestone | Writes to                              | Gate mode  | Option | Confidence floor |
+|----------------------------|-----------|-----------------------------------------|------------|--------|-------------------|
+| `synthesize_baseline`      | M12       | `baselines/data/*.yaml`                 | Strict     | B      | 0.85              |
+| `synthesize_diff`          | M13       | `curation/sources_registry.yaml`        | Strict     | D      | 0.85              |
+| `synthesize_scenario`      | M15       | `scenarios` table (Postgres)            | Soft       | C      | 0.70              |
+| `synthesize_insight`       | M16       | `insights` table (Postgres)             | Soft       | A      | 0.60              |
+| *(no L7 metrics synthesizer)* | —      | —                                       | —          | —      | —                 |
+
+There is **no L7 metrics synthesizer.** Metrics are human-authored
+SQL templates per PDF §3.5 / §7.9 (agent-written SQL is unsafe:
+injection via dimension whitelist bypass, hallucinated joins, non-
+determinism). Agents may *select* metrics through `MetricRuntime`;
+they may not *generate* them.
+
+**The sole-writer rule** (PDF §2.3): every tool other than these four
+in the agentic layers is read-only. Sanitizers, extractors, evaluators,
+narrators all return data without writing canonical state. Only
+`synthesize_*` tools call the disk / DB write paths. The provenance
+audit (M8) and the layer-import linter (M18) enforce this; the
+PreToolUse hook from PDF §10.4 (replicated as a code skeleton in §7
+of this index) blocks any non-synthesizer tool's attempt to write to a
+deterministic-layer path.
+
 ## 3. FastMCP composition rule
 
 **Single front door via `mount()`. Never chained Client calls when sampling is needed.** (PDF §1.1)
