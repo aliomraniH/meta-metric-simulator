@@ -37,3 +37,4 @@ from baselines.tools import sanitize_schema       # noqa: E402, F401  (registers
 from baselines.tools import sanitize_policy       # noqa: E402, F401  (M12b)
 from baselines.tools import sanitize_source_tier  # noqa: E402, F401  (M12b)
 from baselines.tools import extract_metric        # noqa: E402, F401  (M12c-i)
+from baselines.tools import synthesize_baseline   # noqa: E402, F401  (M12c-ii — sole writer)

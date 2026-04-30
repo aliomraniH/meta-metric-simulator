@@ -168,3 +168,117 @@ def _diff_hashes(locked: dict[str, str], current: dict[str, str]) -> list[str]:
         if path not in locked:
             drifted.append(f"{path} (new file added post-lock)")
     return drifted
+
+
+# =============================================================================
+# M12c-ii additions: agentic-layer guards
+# =============================================================================
+
+import functools
+
+
+class CalibrationLockError(RuntimeError):
+    """Raised when an agentic operation runs against a drifted lock."""
+
+
+def requires_calibration_unlocked(f):
+    """Decorator: aborts an agentic operation if the calibration lock has drifted.
+
+    Per architecture_research.pdf §10.5 and AGENTIC_ARCHITECTURE_INDEX.md
+    §8 rule 3.  Wrap every synthesize_* tool with this; the M12c-ii
+    layer-isolation hook does NOT replace this check — they are belt
+    and braces (the decorator runs in-process; the hook runs at the
+    SDK boundary).
+    """
+
+    @functools.wraps(f)
+    async def wrapper(*args, **kwargs):
+        valid, drifted = verify_lock_against_current_state()
+        if not valid:
+            raise CalibrationLockError(
+                f"Calibration drift detected in {drifted}. "
+                "Re-run python -m calibration.runner and re-lock before proceeding."
+            )
+        return await f(*args, **kwargs)
+
+    return wrapper
+
+
+def would_change_locked_hash(
+    target_file: str | Path,
+    target_path: str,
+    new_value,
+    *,
+    lock_path: str | Path = LOCK_PATH,
+) -> bool:
+    """Return True iff applying {target_path: new_value} to target_file
+    would produce a SHA256 different from the locked hash.
+
+    Used by synthesize_baseline before committing to disk.  The
+    synthesizer escalates via ctx.elicit() when this returns True so
+    the user can approve the calibration-invalidating change with
+    full context.
+
+    Implementation: load the current yaml, set the dotted target_path
+    to a {value: new_value, ...} block (preserving any source/
+    provenance/confidence fields already there), serialize back to
+    bytes, sha256, compare to the locked hash.
+    """
+    import json
+    import yaml as _yaml
+
+    target = Path(target_file)
+    lock = Path(lock_path)
+    if not target.exists() or not lock.exists():
+        # No file on disk OR no lock to compare against → conservative
+        # answer is "yes, this would change something" so the
+        # synthesizer surfaces it for human review.
+        return True
+
+    with lock.open() as fh:
+        payload = json.load(fh)
+    locked_hashes = {
+        **(payload.get("params_hashes") or {}),
+        **(payload.get("baselines_hashes") or {}),
+    }
+    # The hash keys are paths relative to the parent of the dir
+    # (params/<file> and baselines/data/<file>).  Find the matching key.
+    target_key = str(target)
+    locked_hash = locked_hashes.get(target_key)
+    if locked_hash is None:
+        # Try matching by basename within either dir.
+        for key in locked_hashes:
+            if Path(key).name == target.name:
+                locked_hash = locked_hashes[key]
+                break
+    if locked_hash is None:
+        return True  # not in lock → unknown → surface for human review
+
+    # Load current content, apply hypothetical change, recompute hash.
+    with target.open() as fh:
+        doc = _yaml.safe_load(fh) or {}
+    parts = target_path.split(".")
+    node = doc
+    # Walk to the parent of the leaf field; create dicts as needed.
+    for part in parts[:-1]:
+        if not isinstance(node, dict):
+            return True  # path doesn't fit current shape → would change
+        if part not in node:
+            return True
+        node = node[part]
+    if not isinstance(node, dict):
+        return True
+    leaf_key = parts[-1]
+    # Preserve sibling fields (source / provenance / confidence /
+    # note); only update the value.
+    existing = node.get(leaf_key)
+    if isinstance(existing, dict):
+        new_block = {**existing, "value": new_value}
+    else:
+        new_block = {"value": new_value}
+    node[leaf_key] = new_block
+
+    candidate_text = _yaml.safe_dump(doc, sort_keys=False).encode("utf-8")
+    candidate_hash = hashlib.sha256(candidate_text).hexdigest()
+
+    return candidate_hash != locked_hash

@@ -269,3 +269,98 @@ def hooks_for_layer(layer: str) -> dict[str, list[HookFn]]:
         "PreToolUse": [make_sanitize_pretooluse_hook(contract)],
         "PostToolUse": [make_synthesize_posttooluse_hook(contract)],
     }
+
+
+# -----------------------------------------------------------------------------
+# M12c-ii — layer-isolation PreToolUse hook
+# -----------------------------------------------------------------------------
+
+# Paths the agentic layers MUST NOT write to.  baselines/data/ is NOT in
+# this list — synthesize_baseline writes there.  curation/ is excluded
+# because synthesize_diff (M13) writes curation/sources_registry.yaml.
+_DETERMINISTIC_PATH_PREFIXES: tuple[str, ...] = (
+    "params/",
+    "algorithms/",
+    "engine/",
+    "metrics/",
+    "calibration/",
+)
+
+# Synthesize_* tool name suffixes from AGENTIC_ARCHITECTURE_INDEX.md §2.4.
+_SYNTHESIZE_TOOL_SUFFIXES: tuple[str, ...] = (
+    "synthesize_baseline",   # M12 — baselines/data/*.yaml
+    "synthesize_diff",       # M13 — curation/sources_registry.yaml
+    "synthesize_scenario",   # M15 — scenarios table
+    "synthesize_insight",    # M16 — insights table
+)
+
+
+def make_layer_isolation_hook() -> HookFn:
+    """Block agentic tool calls that try to write to deterministic-layer state.
+
+    Per architecture_research.pdf §10.4 and AGENTIC_ARCHITECTURE_INDEX.md
+    §8 rule 1.  Belt-and-braces with the per-tool target_file check
+    inside each synthesize_* implementation — this hook runs at the
+    SDK boundary, the per-tool check runs in-process.
+
+    Logic:
+      * Tools whose context carries readOnlyHint=True are allowed.
+      * Any other tool whose target_file/path/file argument begins with
+        a deterministic-path prefix (params/, algorithms/, engine/,
+        metrics/, calibration/) is denied — including synthesize_* tools
+        whose name passes the synthesize check but whose TARGET is
+        outside their canonical scope.
+    """
+
+    async def hook(tool_name, tool_input=None, context=None) -> dict:
+        # Normalise the call shape — the SDK passes (input_data, tool_use_id,
+        # context) in some places and (tool_name, tool_input, context) in
+        # others.  Tests typically pass the second form directly.
+        if isinstance(tool_name, dict):
+            input_data = tool_name
+            tool_name_str = input_data.get("tool_name", "")
+            tool_input = input_data.get("tool_input", {}) or {}
+        else:
+            tool_name_str = tool_name or ""
+            tool_input = tool_input or {}
+        context = context or {}
+
+        # 1. Read-only tools always pass.
+        annotations = (context or {}).get("tool_annotations", {}) or {}
+        if annotations.get("readOnlyHint"):
+            return {}
+
+        # 2. Resolve a target path from common arg keys.
+        target = (
+            tool_input.get("target_file")
+            or tool_input.get("path")
+            or tool_input.get("file")
+            or ""
+        )
+        if not isinstance(target, str):
+            target = str(target)
+        if not target:
+            return {}  # no target → nothing to gate on
+
+        # 3. Deny any write to a deterministic-path prefix.  This denies
+        # both non-synthesizer writes AND synthesize_* writes that tried
+        # to escape their canonical scope.
+        for prefix in _DETERMINISTIC_PATH_PREFIXES:
+            if target.startswith(prefix):
+                return {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": (
+                            f"Tool {tool_name_str!r} attempted write to deterministic "
+                            f"layer prefix {prefix!r} (target={target!r}). Only "
+                            "synthesize_* tools may write canonical state, and only "
+                            "to their layer's canonical artefact. See "
+                            "AGENTIC_ARCHITECTURE_INDEX.md §8 rule 2."
+                        ),
+                    }
+                }
+
+        return {}  # allow
+
+    return hook
