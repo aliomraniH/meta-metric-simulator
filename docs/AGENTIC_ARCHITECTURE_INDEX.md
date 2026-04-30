@@ -148,3 +148,185 @@ debugger which layer is doing the work. Name collisions across mounted
 sub-servers are handled by the prefix; two sub-servers can both define
 a tool called `synthesize` because they surface as `l4_synthesize` and
 `l8_synthesize`. (PDF §1.4)
+
+## 4. Replit deployment constraints
+
+Five non-negotiable deployment rules. The PDF flags each as a footgun
+where the wrong choice fails silently and surfaces only when the
+agentic flow needs the broken capability.
+
+### 4.1 Stateful Streamable HTTP — mandatory (PDF §5.1)
+
+The MCP spec defines two HTTP transport modes:
+
+- **Stateless** — each request is independent, no session id. Server
+  cannot push messages back to the client → **no sampling, no
+  elicitation, no roots.**
+- **Stateful** — sessions tracked via `Mcp-Session-Id` header. Server
+  can push messages back via the same connection → sampling,
+  elicitation, roots all work.
+
+**For agentic FastMCP servers, stateful is the only choice that
+works.** Stateless is a footgun: the server boots fine, tools register
+fine, but `ctx.sample` returns an error and tests pass anyway because
+they don't exercise sampling. (PDF §5.1, repeated as anti-pattern §7.2)
+
+```python
+# infra/server.py — required configuration
+session_manager = StreamableHTTPSessionManager(
+    stateless=False,                                      # MUST be False
+    event_store=RedisEventStore(os.environ["REDIS_URL"]), # see §4.2
+)
+
+front_door.run(
+    transport="streamable-http",
+    session_manager=session_manager,
+    host="0.0.0.0",
+    port=int(os.environ.get("PORT", 8000)),
+)
+```
+
+### 4.2 Redis EventStore for resumability (PDF §5.2)
+
+When a Replit replica restarts (deploy, scaling event, network hiccup),
+in-process session state vanishes. Without an external EventStore, the
+client's reconnect loses its session and any in-flight sampling
+requests are lost.
+
+The `EventStore` interface persists per-session events to Redis (or
+Upstash) keyed by session id. When the client reconnects with a
+`Last-Event-ID: <id>` header, the session manager pulls events since
+that id from Redis and replays them. **Sampling requests in flight at
+the time of restart resume cleanly.**
+
+```python
+# infra/eventstore.py — sketch from PDF §5.2
+class RedisEventStore(EventStore):
+    def __init__(self, redis_url: str):
+        self.r = redis.from_url(redis_url)
+
+    async def append(self, session_id: str, event: dict) -> str:
+        event_id = str(uuid4())
+        await self.r.xadd(
+            f"mcp:session:{session_id}",
+            {"event_id": event_id, "data": json.dumps(event)},
+        )
+        return event_id
+
+    async def since(self, session_id: str, last_event_id: str) -> list[dict]:
+        # Read events after last_event_id from the Redis stream.
+        ...
+```
+
+**Production Redis is mandatory for multi-replica.** Local Redis on the
+same VM is acceptable for single-developer development; for production
+multi-replica, configure `REDIS_URL` to point at Upstash or another
+managed Redis.
+
+### 4.3 Postgres for canonical state, NOT SQLite (PDF §5.3)
+
+Replit Deployments may scale or redeploy at any time. **Filesystem
+writes are not durable across redeploys.** A SQLite file written to
+`./events.db` on one replica disappears when the replica is replaced.
+
+Use Postgres (Replit's managed Postgres or external) for every
+canonical table:
+
+| Table          | Owner               | Source of truth |
+|----------------|---------------------|------------------|
+| `scenarios`    | M7 engine            | Postgres         |
+| `events`       | M2 substrate         | Postgres         |
+| `observations` | sanitizer flags      | Postgres         |
+| `syntheses`    | synthesizer decisions | Postgres        |
+| `baselines` mirror | M4 baselines (canonical is yaml) | Postgres for fast lookup |
+| `params` mirror    | M3 params (canonical is yaml)    | Postgres for fast lookup |
+| `evaluations`  | interview answer evaluations | Postgres |
+
+SQLite is acceptable in **two narrow cases**:
+
+- **Tests.** `tests/` use `aiosqlite` for speed and isolation. The
+  `infra/db.py` module uses dialect-variant types so the same code
+  runs against both Postgres and SQLite.
+- **Local development.** Single-developer, single-replica, willing to
+  reset state on redeploy.
+
+**Production never uses SQLite.**
+
+### 4.4 Reserved VM, NOT Autoscale (PDF §5.4)
+
+| Need                                  | Choice              | Rationale                              |
+|---------------------------------------|---------------------|-----------------------------------------|
+| Sampling latency-sensitive            | Reserved VM         | Cold-starts on Autoscale add 10–30s    |
+| Long-running agentic sessions          | Reserved VM         | Autoscale may evict mid-session        |
+| Cost-conscious development             | Autoscale            | Pay-per-request                        |
+| Multi-replica redundancy               | Reserved VM × N      | Load balancer in front                 |
+
+For the Reels simulator, **Reserved VM is the right choice.** Sampling
+latency materially affects user experience, and agentic sessions can
+run minutes (M12 baseline ingestion via Files API; M15 scenario
+synthesis with N=2 evaluator-optimizer iterations). Autoscale's
+cold-start would inject multi-second latency into every `ctx.sample`
+on a freshly-warmed replica.
+
+### 4.5 Environment variables (PDF §5.5)
+
+`.replit` exports:
+
+```ini
+# Build-time flags
+CLAUDE_CODE_FORK_SUBAGENT=1     # ~90% input-token savings on subagent fan-out (PDF §4.3)
+CLAUDE_CODE_ENABLE_TELEMETRY=1  # OTel export wired in infra/telemetry.py
+```
+
+Replit Secrets (never committed to git; `.env.example` documents the
+keys with empty values):
+
+```ini
+MCP_AUTH_TOKEN=<oauth provider token>
+ANTHROPIC_API_KEY=sk-ant-...
+VOYAGE_API_KEY=pa-...
+REDIS_URL=rediss://...
+DATABASE_URL=postgresql+asyncpg://...
+```
+
+The `CLAUDE_CODE_FORK_SUBAGENT=1` flag is "essentially mandatory" per
+PDF §4.3 for Replit Reserved VM deployments with multiple agentic
+layers. Without forking, each subagent loads independently — on Opus
+that's 60+ seconds of cold-start per subagent.
+
+### 4.6 Prompt cache TTL — explicit `"ttl":"1h"` on every block (PDF §6.1)
+
+Anthropic's prompt cache defaults to a 5-minute TTL. For chat-style
+applications this is fine. **For agentic workflows that pause for
+elicitation** (`ctx.elicit` calls a human, the human takes 30 seconds
+to respond), **the cache expires mid-flow.** The default 5-minute TTL
+silently dropped from 5 minutes to itself in March 2026 reaffirms how
+load-bearing the explicit setting is.
+
+Set `"ttl":"1h"` explicitly on every `cache_control` block:
+
+```python
+client.messages.create(
+    model="claude-sonnet-4-6",
+    system=[
+        {
+            "type": "text",
+            "text": SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral", "ttl": "1h"},  # explicit
+        }
+    ],
+    messages=[...],
+)
+```
+
+What to cache (PDF §6.2): system prompts, tool definitions, reference
+documents (e.g., `reels_metrics_comprehensive_v2.md` for the M12
+ingestion step), few-shot example libraries.
+
+What NOT to cache (PDF §6.3): user-specific content, scenario-specific
+state, recent tool results.
+
+Cost model (PDF §6.5): cache reads = 10% of base input price; cache
+writes = 1.25× base. Break-even at ~5 reads per write; >50 reads
+gives >80% savings. For one-shot tools, caching is net-negative —
+don't cache.
