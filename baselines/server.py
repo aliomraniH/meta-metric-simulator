@@ -33,4 +33,6 @@ baselines_server = FastMCP("baselines")
 # server instance is constructed so the decorator finds a live target.
 # Each tool module imports `baselines_server` from this module — the
 # import order here resolves the circular reference cleanly.
-from baselines.tools import sanitize_schema  # noqa: E402, F401  (registers via decorator)
+from baselines.tools import sanitize_schema       # noqa: E402, F401  (registers via decorator)
+from baselines.tools import sanitize_policy       # noqa: E402, F401  (M12b)
+from baselines.tools import sanitize_source_tier  # noqa: E402, F401  (M12b)
