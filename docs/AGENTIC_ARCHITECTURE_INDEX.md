@@ -428,3 +428,90 @@ Implications:
 - **API-key revocation** by the user does not affect the MCP server
   itself; the server keeps running but sampling fails. Health checks
   on the server alone won't surface this — the M18 canary will.
+
+## 7. Code skeleton index
+
+Five reference skeletons from PDF §10. Each one is the canonical shape
+for the named pattern; the implementing milestone copies the structure
+into the named target file and adapts to its layer's specifics.
+
+| Pattern                                  | PDF section | Implementing milestone | Target file                                   |
+|------------------------------------------|-------------|-------------------------|-----------------------------------------------|
+| `mount()` composition                    | §10.1       | M12                     | `infra/server.py`                             |
+| Sanitize tool (deterministic, `readOnlyHint=True`) | §10.2 | M12             | `baselines/tools/sanitize_*.py` (then M13/M15/M16 follow the shape) |
+| Synthesizer pattern (sole writer)        | §10.3       | M12                     | `baselines/tools/synthesize_baseline.py` (then M13: `curation/tools/synthesize_diff.py`; M15: `engine/tools/synthesize_scenario.py`; M16: `insights/tools/synthesize_insight.py`) |
+| PreToolUse layer-isolation hook          | §10.4       | M12                     | `orchestrator/hooks.py` (extends the M1 hook factory with the deterministic-paths denylist) |
+| Calibration verify wrapper (`@requires_calibration_unlocked`) | §10.5 | M12 | `calibration/lock.py` decorator applied to every `synthesize_*` tool across M12/M13/M15/M16 |
+
+The §10.1 mount-composition skeleton is reproduced verbatim in §3 of
+this index. The §10.3 synthesizer pattern is the load-bearing one —
+its `verify_lock_against_current_state()` pre-call + `ctx.elicit()`
+calibration-impact escalation + `write_yaml_atomic()` rename-after-tmp
+sequence is what M12's first synthesize tool must implement, and the
+shape repeats unchanged in M13/M15/M16.
+
+## 8. Binding rules for M12–M18
+
+Eight non-negotiable conventions. Each cites the PDF section that
+grounds it; the M18 acceptance suite enforces every rule that is
+test-detectable.
+
+1. **Agentic code lives in existing layer directories** with new
+   `server.py` + `tools/` + `prompts/` + `schemas.py` subdirs:
+
+   | Layer | Directory      | Milestone | Notes                                            |
+   |-------|----------------|-----------|--------------------------------------------------|
+   | 4     | `baselines/`   | M12       | Strict gate (Option B), `synthesize_baseline`    |
+   | 5     | `curation/`    | M13       | Strict gate (Option D), `synthesize_diff`        |
+   | 6     | `engine/`      | M15       | Soft gate (Option C, scenario sublayer only); deterministic engine from M7 untouched |
+   | 8     | `insights/`    | M16       | Soft gate (Option A, hook-only), `synthesize_insight` |
+   | front-door | `infra/server.py` | M0 + M12 | M0 created the front door; M12 mounts the first sub-server (`l4`) |
+
+2. **Every tool that writes canonical state MUST be a `synthesize_*`
+   tool.** Sanitizers are `readOnlyHint=True`. The provenance audit
+   (M8) and the layer-import linter (M18) enforce the single-writer
+   rule. PDF §2.3 (the synthesizer-as-sole-writer rule, including the
+   four documented failure modes when violated).
+
+3. **Every agentic milestone starts with the calibration lock
+   prelude check.** `verify_lock_against_current_state()` runs before
+   anything else. Abort on drift before proceeding. PDF §10.5
+   (`@requires_calibration_unlocked` decorator skeleton); reinforced
+   as anti-pattern §7.7.
+
+4. **Every `synthesize_*` tool ends with a calibration-impact
+   post-check.** If the write would change a locked yaml hash, surface
+   via `ctx.elicit()` for human approval before committing. The Layer
+   4 strict gate also requires confidence ≥ 0.85 and severity < high.
+   PDF §10.3 (synthesizer skeleton); §2.4 (calibration-impact pre-
+   check pseudocode).
+
+5. **Replit constraints are non-negotiable.** Stateful Streamable
+   HTTP, Redis EventStore, Postgres (not SQLite) for canonical state,
+   `"ttl":"1h"` explicit on every `cache_control`,
+   `CLAUDE_CODE_FORK_SUBAGENT=1` in `.replit`. PDF §5 (the full
+   constraints chapter); §6.1 (cache TTL); reinforced as anti-patterns
+   §7.2 / §7.10.
+
+6. **Citations API + Structured Outputs cannot combine in one call.**
+   Two-call pattern: call 1 = Citations to gather cited evidence;
+   call 2 = strict tool use (`strict:true`) to format the structured
+   output. Applies to M12 baseline extraction
+   (`baselines/tools/extract_metric.py`) and M13 curation refresh
+   (`curation/tools/diff_proposal.py`). PDF §7.3.
+
+7. **Multi-agent only for genuinely independent work.** Sanitizers
+   are parallel `@mcp.tool` calls within one agent (siblings, not
+   nested) — not parallel subagents. Tightly-coupled tasks that share
+   inputs and feed the same downstream synthesizer don't benefit from
+   process-level parallelism. PDF §7.8 / §7.11 (max 3 deep).
+
+8. **The PDF wins on conflicts with prior context.** When this index
+   or any milestone prompt disagrees with the PDF, the PDF is
+   authoritative. Deterministic-core lessons from M5 (yaml ingestion
+   conventions), M8 (provenance audit), and M11 (calibration lock)
+   still apply — agentic layers are additive, not replacements. The
+   architectural decisions in PDF §11 ("What's likely to change")
+   that are flagged stable — `mount()`, sanitize/synthesize, agents
+   only on Layers 4/5/6/8, calibration-as-hard-gate — are unlikely
+   to change and are the safest things to anchor on.
