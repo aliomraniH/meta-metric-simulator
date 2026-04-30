@@ -330,3 +330,101 @@ Cost model (PDF §6.5): cache reads = 10% of base input price; cache
 writes = 1.25× base. Break-even at ~5 reads per write; >50 reads
 gives >80% savings. For one-shot tools, caching is net-negative —
 don't cache.
+
+## 5. Anti-pattern catalog
+
+Eleven do-nots from PDF §7. The "where temptation arises" column is
+the most load-bearing — it tells future contributors which file or
+layer to inspect first when reviewing an agentic change. The PDF
+explicitly notes that several of these fail silently (sampling-channel
+breaks, cache-TTL drift, calibration-lock skips), so reviewers cannot
+rely on test failures to catch them.
+
+| #    | Anti-pattern                                                    | Where temptation arises                                                | Why it fails                                                                                                                  | The right pattern                                                                                                                  |
+|------|-----------------------------------------------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| 7.1  | Chained MCP `Client` calls when sampling is needed              | `infra/server.py` initial composition                                   | Inner server's `ctx.sample` reaches outer server, which has no logic to forward to the orchestrator's transport. Silent fail.   | `mount()` composition. Single transport, sampling preserved. (See §3 of this index.)                                              |
+| 7.2  | Stateless HTTP transport on Replit                              | `infra/server.py` transport configuration                               | Stateless mode disables sampling, elicitation, roots. Tests that don't exercise these capabilities pass anyway.                | `stateless=False` on `StreamableHTTPSessionManager`, `Mcp-Session-Id` header, Redis EventStore. (§4.1, §4.2 of this index.)        |
+| 7.3  | Combine Citations API + Structured Outputs in one call          | `baselines/tools/extract_metric.py`                                     | Returns 400; the two features are mutually exclusive in a single API call.                                                     | Two-call sequence: call 1 = Citations to gather cited evidence; call 2 = strict tool use to format the extracted metric.            |
+| 7.4  | Use Opus on every layer                                          | `orchestrator/agents.py` model assignment                               | Cost. Opus 4.7 ≈ 5× Sonnet 4.6 at same token volume. Workers don't need Opus.                                                  | Sonnet 4.6 for extraction / narration / evaluation. Haiku 4.5 for cheap sanitizers. Opus 4.7 only for orchestrator + final synthesis. |
+| 7.5  | Agents on Layers 1, 2, 3, 6 (engine), 7, 9                       | "Wouldn't it be nice if an agent could tune ranking weights?"           | Corrupts the calibrated core. Algorithm semantics depend on stable params; metrics depend on stable SQL; calibration depends on deterministic engine. | Agents on Layers 4, 5, 6 (scenario synthesis sublayer only), 8. Everything else stays deterministic.                              |
+| 7.6  | Let agents call `open()` on yaml files                          | Any tool that "needs" to write a value to yaml as part of its job       | Bypasses the sanitize gate. The synthesizer is the sole writer.                                                                | All writes go through `synthesize_*` tools. Sanitizers are read-only (`readOnlyHint=True`). Provenance audit catches violations.   |
+| 7.7  | Skip the calibration lock verify on agentic milestones          | "M12 just creates new files in `baselines/server.py`, why need the check?" | If `params/` or `baselines/data/` drifted since lock, the agent's outputs are based on uncalibrated state. Drift may not surface until M14+. | Every agentic milestone runs `verify_lock_against_current_state()` as the first step. Abort on drift.                              |
+| 7.8  | Multi-agent for tightly-coupled tasks                           | "I'll spawn three subagents in parallel to handle these three sanitizers." | Three sanitizers are functions of the same input and produce flags consumed by the same downstream synthesizer. Coordination overhead, no parallelism gain. | Multi-agent for genuinely independent subtasks. For coupled tasks, sequential or parallel-tool-call within one agent.            |
+| 7.9  | Trust agent-generated SQL                                       | Layer 7 metrics, Layer 8 insights ("can the narrator just write a custom query?") | SQL injection via dimension whitelist bypass; hallucinated joins; non-determinism between runs.                                | Metrics are human-authored SQL templates. The compiler enforces a closed `group_by` whitelist. Agents may select metrics; they may not generate them. |
+| 7.10 | Rely on the 5-minute cache default                              | Forgetting to set `"ttl":"1h"` because the default mostly works         | Agentic workflows that pause for `ctx.elicit` exceed 5 minutes. Cache expires mid-flow; subsequent calls reload the entire system prompt. | `"ttl":"1h"` explicit on every `cache_control` block. (§4.6 of this index.)                                                       |
+| 7.11 | Nest tool calls more than 3 deep                                 | Composed agentic flows where Tool A → subagent → Tool B → Tool C        | Context-window pressure (each level adds tool defs + history); debugging difficulty (which level produced the error?); latency multiplication. | Flatten. If the flow is 4+ deep, the architecture has wrong decomposition. Sanitizers are parallel siblings of the agent, not nested under it. |
+
+## 6. Sampling channel preservation rules
+
+The sampling channel is the mechanism by which an MCP server requests
+a completion from the user's model. **Preserving this channel is the
+single most important architectural concern in the agentic layers.**
+(PDF §8 opening paragraph.)
+
+The flow recap (PDF §8.1; cross-reference §3 of this index for the
+four-step trace and the Pattern A vs Pattern B comparison):
+tool → `ctx.sample(...)` → `sampling/createMessage` JSON-RPC →
+active transport → connected client (Agent SDK orchestrator) →
+user's configured model → response back along the same path.
+
+### What breaks the channel (PDF §8.2)
+
+| #   | Failure mode                                              | Specific file / config that introduces the break                                                                          |
+|-----|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| 1   | Stateless transport                                       | `infra/server.py` — `StreamableHTTPSessionManager(stateless=True)`. Server has no way to push messages back; sampling has nowhere to go. |
+| 2   | Chained `Client` calls                                    | Pattern B from §3 of this index. Intermediate server has no transport pointing to the orchestrator.                       |
+| 3   | Process isolation without channel forwarding              | A subprocess server with its own transport pointing at its parent process, not the orchestrator. FastMCP doesn't forward sampling across the boundary. |
+| 4   | Dead transport connections                                | Replit's default proxy idle timeout is 60s. Without keepalives, long-poll connections get reaped silently.                |
+| 5   | Missing capability declarations                           | Agent SDK orchestrator config that omits `capabilities: {"sampling": {}}` during the MCP handshake. Sampling rejected at the protocol level. |
+
+### What preserves the channel (PDF §8.3)
+
+| #   | Preservation rule                                         | Implementation pointer                                                                                                     |
+|-----|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| 1   | Stateful Streamable HTTP                                  | `infra/server.py` — `StreamableHTTPSessionManager(stateless=False)` (§4.1).                                                |
+| 2   | `mount()` composition                                     | `front_door.mount("l4", baselines_server)` etc. (§3 of this index).                                                        |
+| 3   | Explicit capability declarations                          | Agent SDK orchestrator config: `capabilities: {"sampling": {}}` declared during handshake.                                 |
+| 4   | Transport keepalives                                      | WebSocket / SSE pings every 30 seconds; default 60-second proxy idle timeout will not reap the connection.                |
+| 5   | Proper session management                                 | `Mcp-Session-Id` present on every request; `RedisEventStore` configured for resumability across replica restarts (§4.2).  |
+
+### M18 acceptance canary (PDF §8.4)
+
+The M18 acceptance test suite includes:
+
+> *"Sampling channel: a layer4 tool successfully calls `ctx.sample()`
+> back to the orchestrator."*
+
+**This is the canary.** If it passes, the channel is intact. If it
+fails, fix before shipping. The PDF explicitly notes that several
+common silent failures look like:
+
+- Tool returns `None` from `ctx.sample` instead of a completion →
+  sampling reaches the client but the client isn't routing to a
+  model. **Check Agent SDK config.**
+- Tool times out on `ctx.sample` → request never reached the client.
+  **Check transport mode and composition pattern.**
+- Tool returns a completion but the content is empty → the model is
+  being called but with empty messages. **Check serialization.**
+
+The canary covers all three by exercising a real `ctx.sample()` round
+trip from a Layer 4 tool through the front door to the orchestrator
+and back. M18's `tests/integration/test_acceptance.py` will register
+this as a single PASS/FAIL check; failure blocks shipping.
+
+### Cost attribution (PDF §8.5)
+
+**Sampling requests bill against the user's account, not the
+server's.** The user's API key is the one used for the actual model
+call. The MCP server is just routing.
+
+Implications:
+
+- **Usage tracking** must be done at the orchestrator level, not the
+  server level. Per-tool token counts surfaced from server-side
+  telemetry would underreport real cost.
+- **Rate limits** apply to the user's tier, not the server's. A
+  rate-limited user breaks every agentic flow that calls
+  `ctx.sample()` until the limit resets.
+- **API-key revocation** by the user does not affect the MCP server
+  itself; the server keeps running but sampling fails. Health checks
+  on the server alone won't surface this — the M18 canary will.
