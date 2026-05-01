@@ -74,7 +74,12 @@ def build_app() -> FastMCP:
     # l4_sanitize_source_tier, l4_synthesize_baseline at the front door.
     from baselines.server import baselines_server  # noqa: E402
     app.mount(baselines_server, namespace="l4")
-    app.mount(_placeholder_server("curation", "l5"), namespace="l5")
+    # Layer 5 (curation) is real as of M13b — agentic refresh of
+    # sources_registry.yaml via web_search + web_fetch + diff_proposal +
+    # sanitize_constitution + synthesize_diff (sole writer).  Constitution-
+    # gated; never auto-applies (every accept goes through ctx.elicit).
+    from curation.server import curation_server  # noqa: E402
+    app.mount(curation_server, namespace="l5")
     app.mount(_placeholder_server("engine_compiler", "l6"), namespace="l6")
     app.mount(_placeholder_server("insights", "l8"), namespace="l8")
 
