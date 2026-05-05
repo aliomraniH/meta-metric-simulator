@@ -69,6 +69,14 @@ scenarios = Table(
     Column("disputed", Integer, nullable=False, server_default=text("0")),
     Column("confidence", Float, nullable=True),
     Column("created_at", Float, nullable=False),
+    # M15c — agentic-side fields populated by synthesize_scenario.
+    # Nullable so M7-only writes (engine/scenario.py:save) keep working
+    # without code changes.
+    Column("natural_language_intent", Text, nullable=True),
+    Column("time_horizon", String(8), nullable=True),
+    Column("audience_filters", JSONType, nullable=True),
+    Column("iterations_used", Integer, nullable=True, server_default=text("0")),
+    Column("evaluator_verdict_json", JSONType, nullable=True),
 )
 
 events = Table(

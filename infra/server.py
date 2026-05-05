@@ -80,7 +80,13 @@ def build_app() -> FastMCP:
     # gated; never auto-applies (every accept goes through ctx.elicit).
     from curation.server import curation_server  # noqa: E402
     app.mount(curation_server, namespace="l5")
-    app.mount(_placeholder_server("engine_compiler", "l6"), namespace="l6")
+    # Layer 6 scenario synthesis sublayer is real as of M15c — agentic
+    # compile_scenario + evaluate_scenario + synthesize_scenario (sole
+    # writer to the scenarios table).  Soft mode (Option C from §2.3):
+    # writes with disputed=true on N=2 evaluator-optimizer exhaustion.
+    # The deterministic engine itself (M7) is unchanged.
+    from engine.server import engine_server  # noqa: E402
+    app.mount(engine_server, namespace="l6")
     app.mount(_placeholder_server("insights", "l8"), namespace="l8")
 
     return app
