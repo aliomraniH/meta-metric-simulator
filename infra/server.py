@@ -87,7 +87,13 @@ def build_app() -> FastMCP:
     # The deterministic engine itself (M7) is unchanged.
     from engine.server import engine_server  # noqa: E402
     app.mount(engine_server, namespace="l6")
-    app.mount(_placeholder_server("insights", "l8"), namespace="l8")
+    # Layer 8 narrator is real as of M16 — agentic find_similar_scenarios
+    # + narrate_anomalies + synthesize_insight (sole writer to insights
+    # table).  Soft mode (Option A from §2.3): NarratorFlags annotate
+    # the row with disputed=true rather than blocking the write.  The
+    # deterministic detectors (M14) live alongside in insights/.
+    from insights.server import insights_server  # noqa: E402
+    app.mount(insights_server, namespace="l8")
 
     return app
 

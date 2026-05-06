@@ -168,6 +168,26 @@ evaluations = Table(
     Column("created_at", Float, nullable=False),
 )
 
+# M16 — Layer 8 narrator (soft mode, Option A hook-only).  Per
+# AGENTIC_ARCHITECTURE_INDEX.md §2.4 the synthesize_insight tool is
+# the sole writer.  `disputed=true` (with `disputed_by` populated)
+# is the user-visible signal that the narrator's NarratorFlag
+# checks fired — the row is still written so the audit trail stays
+# complete.
+insights = Table(
+    "insights",
+    metadata,
+    Column("insight_id", String(32), primary_key=True),
+    Column("scenario_id", String(64), nullable=False, index=True),
+    Column("metric_name", String(64), nullable=False, index=True),
+    Column("hypotheses_json", JSONType, nullable=False),
+    Column("confidence", Float, nullable=False),
+    Column("disputed", Integer, nullable=False, server_default=text("0")),
+    Column("disputed_by", JSONType, nullable=True),
+    Column("narrator_flags_json", JSONType, nullable=True),
+    Column("created_at", Float, nullable=False),
+)
+
 
 # -----------------------------------------------------------------------------
 # Engine / session lifecycle
